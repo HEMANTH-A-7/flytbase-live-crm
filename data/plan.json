@@ -1,10 +1,10 @@
 {
   "_about": "Analyst judgement on top of the game data. Every id in a `cites` list must exist in the data; test/plan.test.js fails the build if one does not. New live events are not listed here: the CRM handles them by rule until someone reviews them and adds the id to handled_signals.",
-  "today": "2026-11-14",
+  "today": "2026-11-18",
   "account_owner": "Hemanth (CSM)",
   "accounts": {
     "A": {
-      "headline": "The renewal (350,000, term ends 28 Feb 2027) rests on one contact. In October only Westmere flew properly: Metro Central fell to 3 of 9 docks, and Tarn Valley and Norwold have never flown a live mission.",
+      "headline": "Rhys Calder, our only contact, leaves in January, and Insp. Karen Mbeki needs written answers by Friday for a public event on 5 Dec. The renewal (350,000, term ends 28 Feb 2027) rides on both, while Tarn Valley and Norwold have never flown a live mission.",
       "power": {
         "a_renewal": {
           "decides": [
@@ -227,10 +227,92 @@
       },
       "moves": [
         {
+          "key": "a_karen_event",
+          "action": "Answer Insp. Karen Mbeki in writing by Friday: dates to train more operators before the 5 Dec event, and a named engineer on call for the day with a response time. Close her battery email of 11 Aug in the same reply.",
+          "owner": "Hemanth (CSM); Pranjal Suyal for cover on the day",
+          "due": "2026-11-18",
+          "deadline_date": "2026-11-20",
+          "chance": 0.9,
+          "chance_why": "She asked for exactly this, and training and priority support were both won this morning.",
+          "inside": "She asked for it in writing this week; the event is Sat 5 Dec",
+          "deals": [
+            "a_westmere",
+            "a_renewal"
+          ],
+          "why": "Our only user champion has now written twice with no reply. Answering well protects the agreed Westmere deal and gives the renewal a force that vouches for us.",
+          "cites": [
+            "urgent_request",
+            "A/emails/2026-11-18_karen_event.txt",
+            "A/requests.csv#urgent_request",
+            "karen_mbeki",
+            "a_training",
+            "a_priority_support",
+            "km_staff_2",
+            "A/emails/2026-08-11_karen_batteries.txt",
+            "pranjal_suyal"
+          ],
+          "draft": {
+            "to": "karen_mbeki",
+            "subject": "Public event on 5 December: training dates and cover on the day",
+            "opening": "Thank you for writing, and I am sorry your note about the batteries in August went unanswered. Here are both answers in writing, as you asked.",
+            "evidence": [
+              "A/emails/2026-11-18_karen_event.txt",
+              "km_staff_2",
+              "A/emails/2026-08-11_karen_batteries.txt"
+            ],
+            "ask": "Training: we will run extra operator sessions before 5 December under the training already agreed. Send me the officers and the days that suit, and I will confirm dates by Friday. Cover on the day: a named FlytBase engineer on call for the event, with a direct number and a response time, confirmed in writing by Friday. The two docks with weak batteries will have replacement dates in the same note.",
+            "internal": {
+              "to": "pranjal_suyal",
+              "ask": "Name an on-call engineer for Westmere's public event on Sat 5 Dec, with a response time, and two operator training dates before then. Include replacement dates for the two docks with weak batteries.",
+              "by": "2026-11-19"
+            }
+          }
+        },
+        {
+          "key": "a_rhys_successor",
+          "action": "Use Rhys Calder's last weeks: ask him to name his successor or who decides it, introduce Hannah Doyle and each force's finance lead, and raise the renewal order through the programme office before he goes.",
+          "owner": "Hemanth (CSM); Neel Sharma for escalation",
+          "due": "2026-11-18",
+          "deadline_date": "2027-01-04",
+          "chance": 0.6,
+          "chance_why": "He says what was agreed stands, but he leaves before the term ends.",
+          "inside": "Rhys hands over in January; the renewal term ends 28 Feb 2027",
+          "deals": [
+            "a_renewal",
+            "a_tender"
+          ],
+          "why": "Every call since May was with him alone. When he goes, the account has no other thread unless we build one now.",
+          "cites": [
+            "champion_leaves",
+            "A/emails/2026-11-17_rhys_moving.txt",
+            "rhys_calder",
+            "hannah_doyle",
+            "hd_calloff_2",
+            "rc_funding_2",
+            "A/profile.json",
+            "neel_sharma"
+          ],
+          "draft": {
+            "to": "rhys_calder",
+            "subject": "Before you hand over in January",
+            "opening": "Thank you for telling us yourself. To keep what we have agreed on track through the handover, three things would help before January.",
+            "evidence": [
+              "hd_calloff_2",
+              "rc_funding_2"
+            ],
+            "ask": "Who your successor will be, or who decides that. An introduction to Hannah Doyle and to the finance lead at each force who signs a call-off. And the renewal order raised through the programme office before you go, since the term ends on 28 February.",
+            "internal": {
+              "to": "neel_sharma",
+              "ask": "Agree the escalation path while the alliance's programme lead changes, and join the handover call with Rhys Calder.",
+              "by": "2026-11-20"
+            }
+          }
+        },
+        {
           "key": "a_renewal_proof",
           "action": "Send Rhys Calder the renewal case by force: Westmere flew 126 live missions on 14 of 18 docks in October, Metro Central 21 on 3 of 9, Tarn Valley and Norwold none. Ask in writing who signs each force's call-off, and copy Hannah Doyle.",
           "owner": "Hemanth (CSM)",
-          "due": "2026-11-16",
+          "due": "2026-11-19",
           "deals": [
             "a_renewal"
           ],
@@ -242,15 +324,35 @@
             "rc_funding_2",
             "hd_calloff_2",
             "A/contract.txt",
-            "morning_debrief"
+            "morning_debrief",
+            "achal_negi"
           ],
-          "inside": "Renewal term ends 28 Feb 2027, with no automatic renewal"
+          "inside": "Renewal term ends 28 Feb 2027, with no automatic renewal",
+          "deadline_date": "2027-02-28",
+          "chance": 0.7,
+          "chance_why": "The debrief names exactly this evidence as what clears the blocker.",
+          "draft": {
+            "to": "rhys_calder",
+            "subject": "Renewal: how each force is using the docks",
+            "opening": "Ahead of the renewal, here is what each force flew in October, from the flight log.",
+            "evidence": [
+              "flight_log_force_month",
+              "km_usage_1",
+              "A/usage_weekly.csv"
+            ],
+            "ask": "Could you confirm in writing who signs each force's call-off, so the order is ready well before the term ends on 28 February?",
+            "internal": {
+              "to": "achal_negi",
+              "ask": "Prepare the renewal order for 35 docks on current terms, split by force once Accounts shares Schedule 2.",
+              "by": "2026-11-20"
+            }
+          }
         },
         {
           "key": "a_tarn_dataflow",
           "action": "Send Fatima Osei the draft data-flow pack we already hold, as the answer to her own ticket FB-10412 (open since 29 Jun). Ask her the pack's two open questions: the retention period, and who approves new user accounts. Have engineering stand behind the final version.",
           "owner": "Hemanth (CSM); SRV to sign off the pack",
-          "due": "2026-11-16",
+          "due": "2026-11-18",
           "deals": [
             "a_tarn"
           ],
@@ -265,32 +367,31 @@
             "morning_debrief",
             "srv"
           ],
-          "inside": "No dated deadline; every week of delay pushes both forces back"
-        },
-        {
-          "key": "a_karen_reply",
-          "action": "Reply to Insp. Karen Mbeki on the battery fault she raised on 11 Aug: replacement dates, and one named person to call. Ask her for the dock-to-site list, and whether she will stand behind Westmere's figures in the renewal case.",
-          "owner": "Hemanth (CSM)",
-          "due": "2026-11-17",
-          "deals": [
-            "a_westmere",
-            "a_renewal"
-          ],
-          "why": "She is the only user champion and has waited three months. The agreed Westmere deal was already put at risk this morning.",
-          "cites": [
-            "karen_mbeki",
-            "A/emails/2026-08-11_karen_batteries.txt",
-            "A/requests.csv",
-            "a_westmere",
-            "km_usage_1"
-          ],
-          "inside": "Already three months overdue"
+          "inside": "No dated deadline; every week of delay pushes both forces back",
+          "chance": 0.8,
+          "chance_why": "A draft pack exists, and the DPO said three weeks once she has it.",
+          "draft": {
+            "to": "fatima_osei",
+            "subject": "Your request FB-10412: the data-flow documents",
+            "opening": "I am sorry this has taken four months. Attached is the data-flow pack you asked for: data flows, retention, storage location and access controls.",
+            "evidence": [
+              "dataflow_pack",
+              "fo_needs_3",
+              "support_ticket_history"
+            ],
+            "ask": "Two points in the pack need your answer: the retention period your assessment should state, and who in the force approves new user accounts. If anything else is missing, tell me and I will have it within the week.",
+            "internal": {
+              "to": "srv",
+              "ask": "Sign off the draft data-flow pack for Tarn Valley so it can go to their DPO as final.",
+              "by": "2026-11-18"
+            }
+          }
         },
         {
           "key": "a_ewan_overtime",
           "action": "Ask Ewan Brooks for the drone-operator overtime figure he can pull in a week, to set a cost per flight against the 1,500-pound helicopter hour for his CFO. Ask him too why Metro Central flew only 3 of 9 docks in October.",
           "owner": "Hemanth (CSM)",
-          "due": "2026-11-18",
+          "due": "2026-11-20",
           "deals": [
             "a_westmere",
             "a_renewal"
@@ -304,13 +405,28 @@
             "helicopter_cost_overtime",
             "flight_log_force_month"
           ],
-          "inside": "Before Metro Central's call-off decision on the renewal (by 28 Feb 2027)"
+          "inside": "Before Metro Central's call-off decision on the renewal (by 28 Feb 2027)",
+          "deadline_date": "2027-02-28",
+          "chance": 0.6,
+          "chance_why": "He offered the figure himself; the Metro Central drop may make the conversation harder.",
+          "draft": {
+            "to": "ewan_brooks",
+            "subject": "Cost per flight against the helicopter hour",
+            "opening": "Your CFO wants a cost per flight set against helicopter hours before any call-off. We hold the helicopter side; the drone side needs your overtime figure.",
+            "evidence": [
+              "eb_heli_1",
+              "helicopter_cost_overtime",
+              "eb_drone_2",
+              "flight_log_force_month"
+            ],
+            "ask": "Could you pull the drone operators' overtime for October? I would also like to understand why Metro Central flew 3 of its 9 docks that month."
+          }
         },
         {
           "key": "a_hannah_route",
           "action": "Call Hannah Doyle: confirm how the renewal is bought (direct order or her formal process) and agree she is copied from now on.",
           "owner": "Hemanth (CSM)",
-          "due": "2026-11-19",
+          "due": "2026-11-23",
           "deals": [
             "a_renewal",
             "a_tender"
@@ -321,7 +437,20 @@
             "hd_silence_3",
             "A/calls/2025-12-16_pilot_review.txt"
           ],
-          "inside": "Before the renewal order is raised (term ends 28 Feb 2027)"
+          "inside": "Before the renewal order is raised (term ends 28 Feb 2027)",
+          "deadline_date": "2027-02-28",
+          "chance": 0.4,
+          "chance_why": "She asked to be kept informed, but has heard nothing since the pilot.",
+          "draft": {
+            "to": "hannah_doyle",
+            "subject": "How the renewal should be bought",
+            "opening": "You asked in December to be kept informed, and we have not been in touch since the pilot. I would like to put that right before the renewal.",
+            "evidence": [
+              "hd_calloff_2",
+              "hd_silence_3"
+            ],
+            "ask": "Should the renewal go through your formal process or as a direct order from the programme office, and may I copy you on it from now on?"
+          }
         }
       ],
       "risks": [
@@ -347,21 +476,23 @@
           "key": "single_thread",
           "type": "cold",
           "severity": "red",
-          "title": "Single-threaded: every call since May was with Rhys Calder alone, and no force contact is on file.",
-          "turns_bad": "The day Rhys is unavailable or moves on",
+          "title": "Single-threaded, and the thread is leaving: every call since May was with Rhys Calder alone, and he hands over in January.",
+          "turns_bad": "January, when Rhys hands over with no successor named",
           "cites": [
             "A/profile.json",
-            "rhys_calder"
+            "rhys_calder",
+            "champion_leaves"
           ]
         },
         {
           "key": "karen_unanswered",
           "type": "cold",
-          "severity": "amber",
-          "title": "Insp. Karen Mbeki's battery email has had no reply since 11 Aug.",
-          "turns_bad": "Already overdue; the champion goes cold",
+          "severity": "red",
+          "title": "Insp. Karen Mbeki has two unanswered requests: the batteries since 11 Aug, and FB-11206 for the 5 Dec event.",
+          "turns_bad": "Fri 20 Nov, the end of the week she gave us",
           "cites": [
             "A/emails/2026-08-11_karen_batteries.txt",
+            "A/requests.csv#urgent_request",
             "karen_mbeki"
           ]
         },
@@ -406,6 +537,21 @@
           "turns_bad": "Each week without the pack. Her DPIA takes three weeks once she has it",
           "cites": [
             "fo_needs_3"
+          ]
+        },
+        {
+          "key": "signal:urgent_request",
+          "turns_bad": "Fri 20 Nov: she asked for both answers in writing this week; the event is Sat 5 Dec",
+          "cites": [
+            "A/emails/2026-11-18_karen_event.txt"
+          ]
+        },
+        {
+          "key": "signal:champion_leaves",
+          "turns_bad": "January: he hands over with no successor named, before the renewal term ends on 28 Feb 2027",
+          "cites": [
+            "A/emails/2026-11-17_rhys_moving.txt",
+            "A/contract.txt"
           ]
         }
       ],
@@ -470,12 +616,24 @@
             "ewan_brooks",
             "A/tickets.json"
           ]
+        },
+        {
+          "key": "rhys_successor",
+          "title": "Who takes over from Rhys Calder, and when",
+          "why": "The renewal order runs through the programme office, and every contact so far has been him.",
+          "who": "Rhys Calder, or Hannah Doyle",
+          "cites": [
+            "champion_leaves",
+            "A/emails/2026-11-17_rhys_moving.txt",
+            "hannah_doyle"
+          ]
         }
       ],
       "headline_cites": [
+        "champion_leaves",
+        "urgent_request",
         "a_renewal",
         "A/contract.txt",
-        "A/profile.json",
         "flight_log_force_month"
       ],
       "value_basis": {
@@ -507,7 +665,11 @@
             "A/contract.txt"
           ]
         }
-      }
+      },
+      "handled_signals": [
+        "champion_leaves",
+        "urgent_request"
+      ]
     },
     "B": {
       "headline": "Five docks fly 85% of the flights. The renewal (140,000, ends 31 Jan 2027) needs finance, whose request has had no reply since 8 Oct, and the deputy who knows the rollout is leaving.",
@@ -727,7 +889,7 @@
           "key": "b_deputy_knowhow",
           "action": "Ask Stefan Roy for a two-hour session with his deputy this week to write the rollout down, using Beatriz Alonso's Plant 7 checklist as the template. Ask again for the install list (requested since 22 May).",
           "owner": "Hemanth (CSM)",
-          "due": "2026-11-16",
+          "due": "2026-11-18",
           "deals": [
             "b_idle"
           ],
@@ -738,15 +900,35 @@
             "ba_deputy_0",
             "ba_playbook_2",
             "plant7_checklist",
-            "B/calls/2026-05-21_intro_call.txt"
+            "B/calls/2026-05-21_intro_call.txt",
+            "pranjal_suyal"
           ],
-          "inside": "Before the deputy leaves (date not on file)"
+          "inside": "Before the deputy leaves (date not on file)",
+          "deadline_known": true,
+          "chance": 0.6,
+          "chance_why": "Stefan controls access to his deputy and has passed requests on before without result.",
+          "draft": {
+            "to": "stefan_roy",
+            "subject": "Writing the rollout down before your deputy leaves",
+            "opening": "Your deputy set up most of the docks, and nothing of how he did it is written down. Before he leaves, a two-hour session would save the next rollout months.",
+            "evidence": [
+              "sr_repl_2",
+              "ba_deputy_0",
+              "plant7_checklist"
+            ],
+            "ask": "Could you set up two hours with him this week? We will bring Beatriz Alonso's Plant 7 checklist as the template, and ask again for the install list we requested on 22 May.",
+            "internal": {
+              "to": "pranjal_suyal",
+              "ask": "Join the session with the deputy and turn the notes into a rollout playbook within a week.",
+              "by": "2026-11-20"
+            }
+          }
         },
         {
           "key": "b_owen_proposal",
           "action": "Send Owen Fitch a dock-exception request for his register, where drone docks are \"NOT LISTED\" today, built from the network plan and the Plant 7 checklist. Take up his offer of two network-engineer days for a pilot at Plants 11 to 14, which run on 4G backup only.",
           "owner": "Hemanth (CSM)",
-          "due": "2026-11-17",
+          "due": "2026-11-19",
           "deals": [
             "b_idle",
             "b_insurance"
@@ -760,15 +942,37 @@
             "of_weak_1",
             "network_plan",
             "plant7_checklist",
-            "morning_debrief"
+            "morning_debrief",
+            "pranjal_suyal"
           ],
-          "inside": "Before segmentation starts in about four months (about mid-March 2027)"
+          "inside": "Before segmentation starts in about four months (about mid-March 2027)",
+          "deadline_date": "2027-03-15",
+          "chance": 0.7,
+          "chance_why": "Every item the debrief names is in hand: the network plan, the checklist and his own offer.",
+          "draft": {
+            "to": "owen_fitch",
+            "subject": "Drone docks in the segmentation exception register",
+            "opening": "The docks are not in the exception register, so default-deny will cut them off when segmentation starts. You offered two days of a network engineer; this is the plan we would use them on.",
+            "evidence": [
+              "network_plan",
+              "of_seg_2",
+              "of_offer_3",
+              "of_weak_1",
+              "plant7_checklist"
+            ],
+            "ask": "Could we list the docks as a device class with their ports and destinations, and pilot at Plants 11 to 14 first, where the 4G links drop?",
+            "internal": {
+              "to": "pranjal_suyal",
+              "ask": "Send Owen Fitch the docks' ports, destinations and bandwidth per plant.",
+              "by": "2026-11-19"
+            }
+          }
         },
         {
           "key": "b_finance_quote",
           "action": "Answer Group Finance's email of 8 Oct with the renewal quote by plant, and ask for 30 minutes with Nadia Rahman. Lead with the insurer's verified 180,000 premium cut, not the 1.2M claim: that spreadsheet's rows add up to 1,053,400 and no guard contract was reduced.",
           "owner": "Hemanth (CSM); Achal Negi for the quote",
-          "due": "2026-11-18",
+          "due": "2026-11-20",
           "deals": [
             "b_renewal",
             "b_sister"
@@ -786,13 +990,39 @@
             "achal_negi",
             "roi_spreadsheet"
           ],
-          "inside": "Renewal term ends 31 Jan 2027, with no automatic renewal"
+          "inside": "Renewal term ends 31 Jan 2027, with no automatic renewal",
+          "deadline_date": "2027-01-31",
+          "chance": 0.6,
+          "chance_why": "Finance asked first; the risk is seven weeks without a reply.",
+          "value_at_stake": {
+            "amount": 140000,
+            "cites": [
+              "B/contract.txt"
+            ]
+          },
+          "draft": {
+            "to": "nadia_rahman",
+            "subject": "Renewal quote by plant",
+            "opening": "Your team asked on 8 October for the renewal quote by plant, and nobody replied. I am sorry. The quote by plant is attached.",
+            "evidence": [
+              "B/emails/2026-10-08_finance_mailbox.txt",
+              "jt_prem_2",
+              "insurer_premium_letter",
+              "sr_roi_2"
+            ],
+            "ask": "Could we take 30 minutes to go through it? The one verified saving is the insurer's 6% premium cut, about 180,000 a year. We will not quote the 1.2 million figure, which finance has not booked.",
+            "internal": {
+              "to": "achal_negi",
+              "ask": "Prepare the renewal quote for 14 docks at 140,000 a year, split by plant.",
+              "by": "2026-11-19"
+            }
+          }
         },
         {
           "key": "b_julian_surveyor",
           "action": "Ask Julian Tate to introduce the insurer's surveyor, and agree the flight-log-by-plant format they will accept for plants 1 to 9. Then build it.",
           "owner": "Hemanth (CSM)",
-          "due": "2026-11-19",
+          "due": "2026-11-23",
           "deals": [
             "b_insurance"
           ],
@@ -805,7 +1035,21 @@
             "morning_debrief",
             "insurer_premium_letter"
           ],
-          "inside": "Before the insurer's review in five months (about mid-April 2027)"
+          "inside": "Before the insurer's review in five months (about mid-April 2027)",
+          "deadline_date": "2027-04-14",
+          "chance": 0.6,
+          "chance_why": "He is warm, and nobody in security has asked him before.",
+          "draft": {
+            "to": "julian_tate",
+            "subject": "What the insurer needs at the review",
+            "opening": "The premium cut rests on consistent flight logs by plant at the review in five months. I would rather build them to the surveyor's needs than guess.",
+            "evidence": [
+              "insurer_premium_letter",
+              "jt_review_2",
+              "jt_prem_2"
+            ],
+            "ask": "Could you introduce me to the insurer's surveyor? And could you send the premium letter on to finance, so they see the saving too?"
+          }
         }
       ],
       "risks": [
@@ -1010,8 +1254,8 @@
             "B/deal_history.json"
           ]
         }
-      }
+      },
+      "handled_signals": []
     }
-  },
-  "handled_signals": []
+  }
 }

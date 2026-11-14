@@ -18,7 +18,7 @@ Requires Node 22.9 or later. There are no runtime dependencies.
 
 ```sh
 cp .env.example .env          # then put your token after AQ_TOKEN=
-npm test                      # 22 tests, including "no invented ids"
+npm test                      # 27 tests, including "no invented ids"
 npm run dev                   # http://localhost:3000
 ```
 
@@ -56,9 +56,18 @@ The browser polls once a minute. A failed or rate-limited call keeps the last go
 - goes to the top of the moves as "reply to the person it names, next working day, owner: account owner"
 - raises a "new since you last looked" banner
 
-None of this needs a code change. Once someone has reviewed the event, its id goes into `handled_signals` in `data/plan.json`.
+None of this needs a code change. Once someone has reviewed the event, its id goes into the account's `handled_signals` in `data/plan.json`, with a move written for it. Events only accumulate: the snapshot and every live read are merged by id, so a stale read never hides one.
 
 The token stays in a server environment variable. It never reaches the browser, and `/api/health` reports only whether it is set.
+
+## The six ideas from the toolkit
+
+- **Next best action:** every move is scored as value at stake × chance it works × urgency, and ranked by the score. Agreed deals count at a tenth, because a move protects them rather than wins them. Urgency is 21 / days to the deadline, capped between 0.4 and 3 (0.5 with no deadline). The sum is shown on every move.
+- **Risk radar:** red, amber or green per deal for the deadline, the deciders and payers (red if one is leaving, amber if one is cold or not met), and the blocker.
+- **Book with receipts:** every deal at its value, with the ids that back it, and what cannot be backed shown apart.
+- **Power map:** who decides, pays, uses, blocks and champions each deal, where each stands, and what each person is waiting on from us.
+- **Blind-spot finder:** claims nobody checked, deals with no value and missing records, with why each matters and who could fill it.
+- **Draft writer:** each move has a ready message to the customer, quoting the evidence with its ids and never a claim, plus the internal request with an owner and a date.
 
 ## How it decides
 

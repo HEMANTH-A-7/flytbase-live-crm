@@ -93,15 +93,18 @@ test("usage: idle docks and concentration are computed from the weekly log", () 
 });
 
 test("a new live event is picked up without a code or plan change", () => {
+  // Live events only accumulate, so new ones arrive on top of the real ones.
   const signals = { signals: [
+    ...seed.signals.signals,
     { id: "sig_x", account: "A", date: "18 Nov", text: "Insp. Karen Mbeki wrote directly ahead of a public event on 5 Dec. Nobody has replied." },
-    { text: "Rhys Calder leaves the drone programme in January. No successor." },
+    { text: "Ewan Brooks says Metro Central has frozen new spending until April. No successor for the budget line." },
   ] };
   const m = build({ signals });
   const a = m.accounts.find((x) => x.id === "A");
-  assert.equal(a.signals.length, 2, "both events land on account A, the second by the person it names");
-  assert.equal(a.moves[0].source, "signal", "an unreviewed event goes to the top of the list");
-  assert.ok(a.moves[0].cites.includes("karen_mbeki"));
+  assert.equal(a.signals.length, 4, "both new events land on account A, the second by the person it names");
+  const intake = a.moves.filter((m) => m.source === "signal");
+  assert.ok(intake.length >= 1 && intake.some((m) => m.rank <= 3), "an unreviewed event lands in the first three moves");
+  assert.ok(intake.some((m) => m.cites.includes("karen_mbeki")));
   assert.ok(a.risks.some((r) => r.key === "signal:sig_x" && r.severity === "red"));
   assert.deepEqual(invalidCites(m), []);
 });
@@ -139,4 +142,52 @@ test("a dated live event moves in-world today forward, and older moves show as o
   assert.equal(m.today, "2026-11-30");
   assert.ok(m.accounts.find((a) => a.id === "A").moves.some((x) => x.overdue));
   assert.ok(build().accounts.every((a) => a.moves.every((x) => !x.overdue)));
+});
+
+test("next best action: score is value at stake x chance x urgency, and ranks follow the score", async () => {
+  const { scoreMove } = await import("../lib/analyze.js");
+  const acct = seed.export.accounts.find((x) => x.id === "A");
+  const today = new Date("2026-11-18T00:00:00Z");
+  const s = scoreMove({ deals: ["a_renewal", "a_westmere"], chance: 0.5, deadline_date: "2026-12-09" }, acct, today);
+  assert.equal(s.value, 350000 + 250000 * 0.1, "agreed deals count at a tenth");
+  assert.equal(s.urgency, 1, "21 days out is urgency 1");
+  assert.equal(s.score, Math.round(375000 * 0.5 * 1));
+  assert.equal(scoreMove({ deals: ["a_tarn"], chance: 1 }, acct, today).urgency, 0.5, "no deadline");
+  assert.equal(scoreMove({ deals: ["a_tarn"], chance: 1, deadline_date: "2026-11-19" }, acct, today).urgency, 3, "three days or less is the cap");
+  for (const a of build().accounts) {
+    const scores = a.moves.map((m) => m.score.score);
+    assert.deepEqual(scores, [...scores].sort((x, y) => y - x), `${a.id}: ranks follow the score`);
+  }
+});
+
+test("risk radar: one row per deal with red, amber or green for deadline, people and blocker", () => {
+  const a = build().accounts.find((x) => x.id === "A");
+  assert.equal(a.radar.length, a.book.deals.length);
+  const renewal = a.radar.find((r) => r.deal === "a_renewal");
+  assert.equal(renewal.blocker.rag, "red", "open blocker");
+  assert.equal(renewal.people.rag, "red", "Rhys Calder decides and the live event says he is leaving");
+  assert.ok(renewal.people.cites.includes("champion_leaves"));
+  assert.equal(a.radar.find((r) => r.deal === "a_tender").deadline.rag, "green", "spec lock passed and met");
+});
+
+test("draft writer: every draft has a recipient, evidence from the record, and never quotes a claim", () => {
+  const m = build();
+  for (const a of m.accounts) {
+    for (const mv of a.moves) {
+      assert.ok(mv.draft.to, `${a.id} ${mv.key}: draft needs a recipient`);
+      for (const e of mv.draft.evidence) assert.notEqual(m.sources[e.id].status, "claim", `${mv.key} quotes claim ${e.id}`);
+    }
+  }
+  const karen = m.accounts.find((x) => x.id === "A").moves.find((x) => x.key === "a_karen_event");
+  assert.equal(karen.draft.internal.to, "Pranjal Suyal");
+});
+
+test("the real live events are read: date, records and reviewed moves", () => {
+  const a = build().accounts.find((x) => x.id === "A");
+  assert.deepEqual(a.signals.map((s) => s.id).sort(), ["champion_leaves", "urgent_request"]);
+  assert.equal(a.signals.find((s) => s.id === "urgent_request").date, "2026-11-18");
+  assert.ok(build().sources["A/emails/2026-11-18_karen_event.txt"], "event records are citable");
+  assert.ok(build().sources["A/requests.csv#urgent_request"], "a row added to an existing log gets its own id");
+  assert.ok(a.moves.every((m) => m.source !== "signal"), "both events are reviewed in the plan");
+  assert.equal(a.moves[0].key, "a_karen_event");
 });

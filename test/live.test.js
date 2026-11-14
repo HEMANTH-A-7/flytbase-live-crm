@@ -55,3 +55,10 @@ test("a new signal from the MCP shows up in the next state, and failures keep th
   assert.ok(m.accounts.find((a) => a.id === "B").signals.some((s) => s.id === "s1"), "still shown after a failed call");
   delete process.env.AQ_TOKEN;
 });
+
+test("live events accumulate: a stale empty read never hides events already held", async () => {
+  const { mergeSignals } = await import("../lib/live.js");
+  const seedSig = { signals: [{ id: "a", text: "one" }] };
+  assert.deepEqual(mergeSignals(seedSig, { signals: [] }).signals.map((s) => s.id), ["a"]);
+  assert.deepEqual(mergeSignals(seedSig, { signals: [{ id: "a", text: "one, updated" }, { id: "b", text: "two" }] }).signals.map((s) => `${s.id}:${s.text}`), ["a:one, updated", "b:two"]);
+});
