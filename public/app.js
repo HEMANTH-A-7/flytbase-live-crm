@@ -6,7 +6,7 @@ const SEEN_KEY = "crm-seen-signals";
 const $ = (s, el = document) => el.querySelector(s);
 
 let model = null;
-let current = (location.hash.match(/^#(A|B)\b/) ?? [])[1] ?? safeGet("crm-account") ?? "A";
+let current = (location.hash.match(/^#([A-Za-z0-9]+)\b/) ?? [])[1] ?? safeGet("crm-account") ?? "A";
 let lastOk = null;
 let lastFocus = null;
 let railObserver = null;
@@ -150,7 +150,7 @@ function hero(a) {
   const stat = (ic, value, label, target, cls) => `<button type="button" class="stat ${cls}" data-jump="${a.id}-${target}">
       <span class="ic">${icon(ic)}</span><span><b>${esc(value)}</b><span>${esc(label)}</span></span></button>`;
   return `<section class="hero">
-      <h1>${esc(a.name)}</h1>
+      <div><h1>${esc(a.name)}</h1>${a.reviewed === false ? `<span class="tag amber" style="margin-top:10px">${icon("robot")}New account: analysed by rule, not reviewed yet</span>` : ""}</div>
       <div class="stats">
         ${stat("coins", money(b.total.value, a.currency), "on the book, every part sourced", "book", "blue")}
         ${stat("seal-check", money(closed?.value ?? 0, a.currency), "agreed or won", "book", "green")}
@@ -543,7 +543,7 @@ async function load() {
     lastOk = Date.now();
     if (!drawerOpen) { render(); window.scrollTo(0, y); } else renderStrip();
     // Deep links such as #B-risks only resolve once the page has rendered.
-    if (first && /^#[AB]-\w+$/.test(location.hash)) document.getElementById(location.hash.slice(1))?.scrollIntoView();
+    if (first && /^#[A-Za-z0-9]+-\w+$/.test(location.hash)) document.getElementById(location.hash.slice(1))?.scrollIntoView();
     checkNew();
   } catch (err) {
     if (!model) $("#main").innerHTML = `<p class="loading-err">Could not load the accounts (${esc(err.message)}). Retrying in a minute.</p>`;
@@ -572,7 +572,7 @@ document.addEventListener("click", (e) => {
   if (jump) document.getElementById(jump.dataset.jump)?.scrollIntoView({ block: "start" });
 });
 window.addEventListener("hashchange", () => {
-  const m = location.hash.match(/^#(A|B)$/);
+  const m = location.hash.match(/^#([A-Za-z0-9]+)$/);
   if (m && m[1] !== current && model) { current = m[1]; render(); window.scrollTo(0, 0); }
 });
 $("#drawer-close").addEventListener("click", closeDrawer);

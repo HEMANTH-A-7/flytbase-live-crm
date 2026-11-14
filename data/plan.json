@@ -1,10 +1,10 @@
 {
   "_about": "Analyst judgement on top of the game data. Every id in a `cites` list must exist in the data; test/plan.test.js fails the build if one does not. New live events are not listed here: the CRM handles them by rule until someone reviews them and adds the id to handled_signals.",
-  "today": "2026-11-18",
+  "today": "2026-11-30",
   "account_owner": "Hemanth (CSM)",
   "accounts": {
     "A": {
-      "headline": "Rhys Calder, our only contact, leaves in January, and Insp. Karen Mbeki needs written answers by Friday for a public event on 5 Dec. The renewal (350,000, term ends 28 Feb 2027) rides on both, while Tarn Valley and Norwold have never flown a live mission.",
+      "headline": "Rhys Calder, our only contact, leaves in January, and Insp. Karen Mbeki still has no written answers for a public event on 5 Dec. The renewal (350,000, term ends 28 Feb 2027) rides on both, while Tarn Valley and Norwold have never flown a live mission.",
       "power": {
         "a_renewal": {
           "decides": [
@@ -228,13 +228,13 @@
       "moves": [
         {
           "key": "a_karen_event",
-          "action": "Answer Insp. Karen Mbeki in writing by Friday: dates to train more operators before the 5 Dec event, and a named engineer on call for the day with a response time. Close her battery email of 11 Aug in the same reply.",
+          "action": "Answer Insp. Karen Mbeki in writing today: dates to train more operators before the 5 Dec event, and a named engineer on call for the day with a response time. Close her battery email of 11 Aug in the same reply.",
           "owner": "Hemanth (CSM); Pranjal Suyal for cover on the day",
-          "due": "2026-11-18",
-          "deadline_date": "2026-11-20",
+          "due": "2026-11-30",
+          "deadline_date": "2026-12-04",
           "chance": 0.9,
           "chance_why": "She asked for exactly this, and training and priority support were both won this morning.",
-          "inside": "She asked for it in writing this week; the event is Sat 5 Dec",
+          "inside": "The public event is Sat 5 Dec; she asked for written answers the week of 18 Nov",
           "deals": [
             "a_westmere",
             "a_renewal"
@@ -260,11 +260,11 @@
               "km_staff_2",
               "A/emails/2026-08-11_karen_batteries.txt"
             ],
-            "ask": "Training: we will run extra operator sessions before 5 December under the training already agreed. Send me the officers and the days that suit, and I will confirm dates by Friday. Cover on the day: a named FlytBase engineer on call for the event, with a direct number and a response time, confirmed in writing by Friday. The two docks with weak batteries will have replacement dates in the same note.",
+            "ask": "Training: we will run extra operator sessions before 5 December under the training already agreed. Send me the officers and the days that suit, and I will confirm dates by Wednesday 2 December. Cover on the day: a named FlytBase engineer on call for the event, with a direct number and a response time, confirmed in writing by Wednesday 2 December. The two docks with weak batteries will have replacement dates in the same note.",
             "internal": {
               "to": "pranjal_suyal",
               "ask": "Name an on-call engineer for Westmere's public event on Sat 5 Dec, with a response time, and two operator training dates before then. Include replacement dates for the two docks with weak batteries.",
-              "by": "2026-11-19"
+              "by": "2026-12-01"
             }
           }
         },
@@ -272,7 +272,7 @@
           "key": "a_rhys_successor",
           "action": "Use Rhys Calder's last weeks: ask him to name his successor or who decides it, introduce Hannah Doyle and each force's finance lead, and raise the renewal order through the programme office before he goes.",
           "owner": "Hemanth (CSM); Neel Sharma for escalation",
-          "due": "2026-11-18",
+          "due": "2026-11-30",
           "deadline_date": "2027-01-04",
           "chance": 0.6,
           "chance_why": "He says what was agreed stands, but he leaves before the term ends.",
@@ -304,7 +304,7 @@
             "internal": {
               "to": "neel_sharma",
               "ask": "Agree the escalation path while the alliance's programme lead changes, and join the handover call with Rhys Calder.",
-              "by": "2026-11-20"
+              "by": "2026-12-02"
             }
           }
         },
@@ -312,7 +312,7 @@
           "key": "a_renewal_proof",
           "action": "Send Rhys Calder the renewal case by force: Westmere flew 126 live missions on 14 of 18 docks in October, Metro Central 21 on 3 of 9, Tarn Valley and Norwold none. Ask in writing who signs each force's call-off, and copy Hannah Doyle.",
           "owner": "Hemanth (CSM)",
-          "due": "2026-11-19",
+          "due": "2026-12-01",
           "deals": [
             "a_renewal"
           ],
@@ -344,7 +344,7 @@
             "internal": {
               "to": "achal_negi",
               "ask": "Prepare the renewal order for 35 docks on current terms, split by force once Accounts shares Schedule 2.",
-              "by": "2026-11-20"
+              "by": "2026-12-02"
             }
           }
         },
@@ -352,7 +352,7 @@
           "key": "a_tarn_dataflow",
           "action": "Send Fatima Osei the draft data-flow pack we already hold, as the answer to her own ticket FB-10412 (open since 29 Jun). Ask her the pack's two open questions: the retention period, and who approves new user accounts. Have engineering stand behind the final version.",
           "owner": "Hemanth (CSM); SRV to sign off the pack",
-          "due": "2026-11-18",
+          "due": "2026-11-30",
           "deals": [
             "a_tarn"
           ],
@@ -383,7 +383,7 @@
             "internal": {
               "to": "srv",
               "ask": "Sign off the draft data-flow pack for Tarn Valley so it can go to their DPO as final.",
-              "by": "2026-11-18"
+              "by": "2026-11-30"
             }
           }
         },
@@ -391,7 +391,7 @@
           "key": "a_ewan_overtime",
           "action": "Ask Ewan Brooks for the drone-operator overtime figure he can pull in a week, to set a cost per flight against the 1,500-pound helicopter hour for his CFO. Ask him too why Metro Central flew only 3 of 9 docks in October.",
           "owner": "Hemanth (CSM)",
-          "due": "2026-11-20",
+          "due": "2026-12-02",
           "deals": [
             "a_westmere",
             "a_renewal"
@@ -426,7 +426,7 @@
           "key": "a_hannah_route",
           "action": "Call Hannah Doyle: confirm how the renewal is bought (direct order or her formal process) and agree she is copied from now on.",
           "owner": "Hemanth (CSM)",
-          "due": "2026-11-23",
+          "due": "2026-12-03",
           "deals": [
             "a_renewal",
             "a_tender"
@@ -489,7 +489,7 @@
           "type": "cold",
           "severity": "red",
           "title": "Insp. Karen Mbeki has two unanswered requests: the batteries since 11 Aug, and FB-11206 for the 5 Dec event.",
-          "turns_bad": "Fri 20 Nov, the end of the week she gave us",
+          "turns_bad": "Already late; the event is Sat 5 Dec",
           "cites": [
             "A/emails/2026-08-11_karen_batteries.txt",
             "A/requests.csv#urgent_request",
@@ -541,7 +541,7 @@
         },
         {
           "key": "signal:urgent_request",
-          "turns_bad": "Fri 20 Nov: she asked for both answers in writing this week; the event is Sat 5 Dec",
+          "turns_bad": "Sat 5 Dec, the event itself. She asked for written answers the week of 18 Nov, so this is already late",
           "cites": [
             "A/emails/2026-11-18_karen_event.txt"
           ]
@@ -672,7 +672,7 @@
       ]
     },
     "B": {
-      "headline": "Five docks fly 85% of the flights. The renewal (140,000, ends 31 Jan 2027) needs finance, whose request has had no reply since 8 Oct, and the deputy who knows the rollout is leaving.",
+      "headline": "Three of Aldermoor's busiest docks went silent on 16 Nov and nobody told us. The renewal (140,000, ends 31 Jan 2027) needs finance, whose request has had no reply since 8 Oct, and the deputy who knows the rollout is leaving.",
       "power": {
         "b_renewal": {
           "decides": [
@@ -886,10 +886,50 @@
       },
       "moves": [
         {
+          "key": "b_usage_drop",
+          "action": "Find out why docks AD-02, AD-05 and AD-10 stopped flying on 16 Nov after flying most nights, though all three stayed online. Raise the ticket ourselves rather than wait, and ask Stefan Roy which plants they sit at.",
+          "owner": "Hemanth (CSM); Pranjal Suyal for the device logs",
+          "due": "2026-11-30",
+          "deadline_date": "2026-12-02",
+          "chance": 0.7,
+          "chance_why": "The docks are online, so their logs will show what changed; we need the customer only to say which plants they are.",
+          "inside": "Every silent week is a gap in the flight logs the insurer will ask for at its review",
+          "deals": [
+            "b_insurance",
+            "b_idle"
+          ],
+          "why": "Three of the five busiest docks went quiet two weeks ago and nobody at the customer said anything. If they sit in plants 1 to 9, the insurer's discount is exposed.",
+          "cites": [
+            "usage_drop",
+            "B/usage_weekly.csv#usage_drop",
+            "stefan_roy",
+            "jt_review_2",
+            "insurer_premium_letter",
+            "of_seg_2",
+            "pranjal_suyal"
+          ],
+          "draft": {
+            "to": "stefan_roy",
+            "subject": "Three docks stopped flying on 16 November",
+            "opening": "Our usage log shows three docks that flew most nights, AD-02, AD-05 and AD-10, have flown nothing since 16 November, though all three are still online. I would rather raise it now than at the insurer's review.",
+            "evidence": [
+              "B/usage_weekly.csv#usage_drop",
+              "jt_review_2",
+              "insurer_premium_letter"
+            ],
+            "ask": "Could you tell me which plants those three docks sit at, and whether anything changed on site that week? We are pulling the device logs on our side.",
+            "internal": {
+              "to": "pranjal_suyal",
+              "ask": "Pull the device events for AD-02, AD-05 and AD-10 from 9 to 29 November and tell me what changed on 16 November.",
+              "by": "2026-12-01"
+            }
+          }
+        },
+        {
           "key": "b_deputy_knowhow",
           "action": "Ask Stefan Roy for a two-hour session with his deputy this week to write the rollout down, using Beatriz Alonso's Plant 7 checklist as the template. Ask again for the install list (requested since 22 May).",
           "owner": "Hemanth (CSM)",
-          "due": "2026-11-18",
+          "due": "2026-11-30",
           "deals": [
             "b_idle"
           ],
@@ -920,7 +960,7 @@
             "internal": {
               "to": "pranjal_suyal",
               "ask": "Join the session with the deputy and turn the notes into a rollout playbook within a week.",
-              "by": "2026-11-20"
+              "by": "2026-12-02"
             }
           }
         },
@@ -928,7 +968,7 @@
           "key": "b_owen_proposal",
           "action": "Send Owen Fitch a dock-exception request for his register, where drone docks are \"NOT LISTED\" today, built from the network plan and the Plant 7 checklist. Take up his offer of two network-engineer days for a pilot at Plants 11 to 14, which run on 4G backup only.",
           "owner": "Hemanth (CSM)",
-          "due": "2026-11-19",
+          "due": "2026-12-01",
           "deals": [
             "b_idle",
             "b_insurance"
@@ -964,7 +1004,7 @@
             "internal": {
               "to": "pranjal_suyal",
               "ask": "Send Owen Fitch the docks' ports, destinations and bandwidth per plant.",
-              "by": "2026-11-19"
+              "by": "2026-12-01"
             }
           }
         },
@@ -972,7 +1012,7 @@
           "key": "b_finance_quote",
           "action": "Answer Group Finance's email of 8 Oct with the renewal quote by plant, and ask for 30 minutes with Nadia Rahman. Lead with the insurer's verified 180,000 premium cut, not the 1.2M claim: that spreadsheet's rows add up to 1,053,400 and no guard contract was reduced.",
           "owner": "Hemanth (CSM); Achal Negi for the quote",
-          "due": "2026-11-20",
+          "due": "2026-12-02",
           "deals": [
             "b_renewal",
             "b_sister"
@@ -1014,7 +1054,7 @@
             "internal": {
               "to": "achal_negi",
               "ask": "Prepare the renewal quote for 14 docks at 140,000 a year, split by plant.",
-              "by": "2026-11-19"
+              "by": "2026-12-01"
             }
           }
         },
@@ -1022,7 +1062,7 @@
           "key": "b_julian_surveyor",
           "action": "Ask Julian Tate to introduce the insurer's surveyor, and agree the flight-log-by-plant format they will accept for plants 1 to 9. Then build it.",
           "owner": "Hemanth (CSM)",
-          "due": "2026-11-23",
+          "due": "2026-12-03",
           "deals": [
             "b_insurance"
           ],
@@ -1136,6 +1176,15 @@
             "b_insurance",
             "morning_debrief"
           ]
+        },
+        {
+          "key": "signal:usage_drop",
+          "severity": "red",
+          "turns_bad": "Already two silent weeks; each further week is a gap the insurer will see at its review",
+          "cites": [
+            "jt_review_2",
+            "insurer_premium_letter"
+          ]
         }
       ],
       "gap_owners": {
@@ -1220,7 +1269,8 @@
         }
       ],
       "headline_cites": [
-        "B/usage_weekly.csv",
+        "usage_drop",
+        "B/usage_weekly.csv#usage_drop",
         "B/contract.txt",
         "B/emails/2026-10-08_finance_mailbox.txt",
         "sr_repl_2"
@@ -1255,7 +1305,9 @@
           ]
         }
       },
-      "handled_signals": []
+      "handled_signals": [
+        "usage_drop"
+      ]
     }
   }
 }

@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { buildModel, invalidCites, normaliseSignals, classifySignal, backingOf, usageFrom, notesToWrite, parseDate } from "../lib/analyze.js";
 import { loadSeed, loadPlan } from "../lib/store.js";
+import * as liveMod from "../lib/live.js";
 
 const seed = loadSeed();
 const plan = loadPlan();
@@ -138,8 +139,8 @@ test("changes that arrive through get_my_accounts are listed with their ids", as
 });
 
 test("a dated live event moves in-world today forward, and older moves show as overdue", () => {
-  const m = build({ signals: { signals: [{ id: "s_late", account: "A", date: "30 Nov", text: "Something happened." }] } });
-  assert.equal(m.today, "2026-11-30");
+  const m = build({ signals: { signals: [{ id: "s_late", account: "A", date: "15 Dec", text: "Something happened." }] } });
+  assert.equal(m.today, "2026-12-15");
   assert.ok(m.accounts.find((a) => a.id === "A").moves.some((x) => x.overdue));
   assert.ok(build().accounts.every((a) => a.moves.every((x) => !x.overdue)));
 });
@@ -199,4 +200,24 @@ test("the morning scorecard is cited, and its closed total matches the one the C
   assert.equal(m.player.computed_closed, 1905000);
   assert.ok(m.player.closed_matches);
   assert.deepEqual(invalidCites(m), []);
+});
+
+test("a released account with no plan still gets all five answers, by rule", () => {
+  const { currentExport } = liveMod;
+  const m = build({ exp: currentExport(seed.export, null, seed.drops) });
+  const k = m.accounts.find((a) => a.id === "K");
+  assert.ok(k, "account K is in the model");
+  assert.equal(k.reviewed, false);
+  assert.ok(k.headline.startsWith("New account"));
+  assert.ok(k.book.deals.length && k.power.every((p) => p.decides.length), "decider inferred for every deal");
+  assert.ok(k.moves.length >= 1 && k.moves.every((x) => x.source === "rule" && x.draft.to));
+  assert.ok(k.risks.some((r) => r.type === "deadline" && r.severity === "red"), "a deadline about two days out is red");
+  assert.ok(k.radar.length && k.gaps.length);
+  assert.deepEqual(invalidCites(m), []);
+});
+
+test("usage rows that arrive with an event are added before the four weeks are taken", () => {
+  const b = build().accounts.find((a) => a.id === "B");
+  assert.equal(b.usage.to, "2026-11-23", "the window now ends with the event's rows");
+  assert.ok(b.usage.cites.includes("B/usage_weekly.csv#usage_drop"));
 });

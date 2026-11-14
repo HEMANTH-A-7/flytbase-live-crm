@@ -10,10 +10,18 @@ process.env.CRM_OVERLAY_FILE = path.join(os.tmpdir(), `crm-test-${process.pid}.j
 
 const note = (t) => ({ title: t, text: "x", account: "A", kind: "next_step" });
 
-test("call priority: signals first, then learn existing notes, then write, then poll", () => {
+test("call priority: signals, whoami, new accounts and their files, then notes, then poll", () => {
   const ov = emptyOverlay();
   assert.equal(nextJob(ov, []).tool, "get_signals");
   ov.signalsAt = "t";
+  assert.equal(nextJob(ov, []).tool, "whoami");
+  applyResult(ov, { tool: "whoami" }, { new_accounts: [{ id: "K", name: "Kestrel Estates" }] }, 0);
+  const fetch = nextJob(ov, []);
+  assert.deepEqual([fetch.tool, fetch.args.account], ["get_new_account", "K"], "a released account is fetched without being asked");
+  applyResult(ov, fetch, { accounts: [{ id: "K" }], files: [{ id: "K_f1" }] }, 0);
+  const file = nextJob(ov, []);
+  assert.deepEqual([file.tool, file.args.file_id], ["get_new_account_file", "K_f1"]);
+  applyResult(ov, file, { id: "K_f1", text: "note" }, 0);
   assert.equal(nextJob(ov, [note("n1")]).tool, "list_notes");
   ov.notesSynced = true;
   assert.equal(nextJob(ov, [note("n1")]).tool, "write_note");
@@ -22,9 +30,9 @@ test("call priority: signals first, then learn existing notes, then write, then 
 });
 
 test("notes already on the server are never written again", () => {
-  const ov = { ...emptyOverlay(), signalsAt: "t", notesSynced: false };
+  const ov = { ...emptyOverlay(), signalsAt: "t", whoamiAt: "t", notesSynced: false };
   applyResult(ov, { tool: "list_notes" }, { notes: [{ title: "n1" }] }, 0);
-  assert.equal(nextJob(ov, [note("n1")]).tool, "get_signals");
+  assert.notEqual(nextJob(ov, [note("n1")]).tool, "write_note");
   const job = nextJob(ov, [note("n1"), note("n2")]);
   assert.equal(job.args.title, "n2");
   applyResult(ov, job, { ok: true }, 0);
@@ -37,7 +45,10 @@ test("fresh accounts from get_my_accounts replace the seed's, wrapped or bare", 
   changed[0].name = "Renamed";
   assert.equal(currentExport(seed, { accounts: { accounts: changed } }).accounts[0].name, "Renamed");
   assert.equal(currentExport(seed, { accounts: changed }).accounts[0].name, "Renamed");
-  assert.equal(currentExport(seed, { accounts: { nothing: 1 } }), seed);
+  assert.deepEqual(currentExport(seed, { accounts: { nothing: 1 } }).accounts, seed.accounts);
+  const withDrop = currentExport(seed, { drops: { K: { minute: 0, exported_at: "x", accounts: [{ id: "K", name: "Kestrel Estates" }], files: [{ id: "K_f1" }] } } });
+  assert.deepEqual(withDrop.accounts.map((a) => a.id), ["A", "B", "K"], "a released account joins the others");
+  assert.ok(withDrop.files.some((f) => f.id === "K_f1"));
 });
 
 test("a new signal from the MCP shows up in the next state, and failures keep the last good data", async () => {
