@@ -1,0 +1,28 @@
+{
+ "source": "Account Quest /play, Build > Toolkit > This morning (copied from the game UI on 2026-11-14)",
+ "book_total": 2116156,
+ "deals": [
+  { "title": "Renew the alliance contract (35 docks)", "account": "A", "stage": "qualified", "value": 136361,
+    "outcome": "Knew the blocker and proposed 2 times, without clearing it.",
+    "would_have_moved": "Send Rhys Calder a proposal with exactly: flight_log_force_month (file), km_usage_1 (from Insp. Karen Mbeki)." },
+  { "title": "Tarn Valley and Norwold go live", "account": "A", "stage": "qualified", "value": 66933,
+    "outcome": "Knew the blocker and proposed 1 time, without clearing it.",
+    "would_have_moved": "Send Fatima Osei a proposal with exactly: srv_dataflow (from SRV), fo_needs_3 (from Fatima Osei), support_ticket_history (file)." },
+  { "title": "Scale Westmere's fleet", "account": "A", "stage": "agreed", "value": 174782,
+    "outcome": "Agreed. Something said put it at risk (offer pitched before they were ready)." },
+  { "title": "Position for the 300-dock framework tender", "account": "A", "stage": "agreed", "value": 1468723,
+    "outcome": "Agreed." },
+  { "title": "Renew the Aldermoor contract (14 docks)", "account": "B", "stage": "identified", "value": 6845,
+    "outcome": "Knew of it, but did not learn enough to see what blocked it.",
+    "would_have_moved": "Nadia Rahman decides and Nadia Rahman pays. The blocker: Finance cannot verify the savings the programme claims." },
+  { "title": "Bring the idle plants into regular patrol", "account": "B", "stage": "qualified", "value": 40541,
+    "outcome": "Knew the blocker and proposed 2 times, without clearing it. Something said put it at risk (offer pitched before they were ready).",
+    "would_have_moved": "Send Owen Fitch a proposal with exactly: network_plan (file), plant7_checklist (file), of_offer_3 (from Owen Fitch)." },
+  { "title": "Protect and extend the insurance discount", "account": "B", "stage": "qualified", "value": 13408,
+    "outcome": "Knew the blocker but did not hold everything that proves the fix (2 pieces missing). Something said put it at risk (offer pitched before they were ready).",
+    "would_have_moved": "Send Julian Tate a proposal with exactly: flight_log_by_plant (file), insurance_pack_template (file)." },
+  { "title": "Case study for the 40-plant sister company", "account": "B", "stage": "identified", "value": 53563,
+    "outcome": "Knew of it, but did not learn enough to see what blocked it.",
+    "would_have_moved": "Stefan Roy decides and Nadia Rahman pays. The blocker: Every number rests on an unverified spreadsheet." }
+ ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "flytbase-live-crm",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Live account CRM for the FlytBase Questathon: five answers per account, every number traced to its source id.",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "dev": "node --env-file-if-exists=.env scripts/dev.mjs",
+    "snapshot": "node --env-file=.env scripts/snapshot.mjs"
+  },
+  "engines": {
+    "node": ">=22.9"
+  }
+}

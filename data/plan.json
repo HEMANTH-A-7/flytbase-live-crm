@@ -1,0 +1,937 @@
+{
+  "_about": "Analyst judgement on top of the game data. Every id in a `cites` list must exist in the data; test/plan.test.js fails the build if one does not. New live events are not listed here: the CRM handles them by rule until someone reviews them and adds the id to handled_signals.",
+  "today": "2026-11-14",
+  "account_owner": "Hemanth (CSM)",
+  "accounts": {
+    "A": {
+      "headline": "The renewal (350,000, term ends 28 Feb 2027) rests on one contact, and half the docks flew nothing in October.",
+      "power": {
+        "a_renewal": {
+          "decides": [
+            {
+              "person": "rhys_calder",
+              "note": "Programme office places the order and wants it sent to him again.",
+              "cites": [
+                "A/emails/2026-10-28_renewal.txt",
+                "A/contract.txt"
+              ]
+            }
+          ],
+          "pays": [
+            {
+              "name": "Each force's chief finance officer",
+              "note": "No pooled budget: each force approves its own call-off.",
+              "cites": [
+                "rc_funding_2",
+                "hd_calloff_2"
+              ]
+            },
+            {
+              "person": "ewan_brooks",
+              "note": "Metro Central's finance partner; his CFO signs only with cost per flight against helicopter hours.",
+              "cites": [
+                "eb_sign_2",
+                "eb_heli_1"
+              ]
+            }
+          ],
+          "uses": [
+            {
+              "person": "karen_mbeki",
+              "note": "Westmere flies; Metro Central flies; Tarn Valley and Norwold do not.",
+              "cites": [
+                "km_usage_1",
+                "rc_appetite_2"
+              ]
+            }
+          ],
+          "blocks": [
+            {
+              "name": "Tarn Valley and Norwold forces",
+              "note": "Never flown a live mission / train only. Their finance will ask why they pay.",
+              "cites": [
+                "rc_appetite_2",
+                "A/usage_weekly.csv"
+              ]
+            }
+          ],
+          "champion": [
+            {
+              "person": "karen_mbeki",
+              "note": "Hosted the pilot and wants more docks whatever the others decide.",
+              "cites": [
+                "A/calls/2025-12-16_pilot_review.txt"
+              ]
+            }
+          ],
+          "waiting_on": "Proof of which forces use the docks, sent to Rhys Calder: the force-by-month flight log plus Karen's verified usage figure."
+        },
+        "a_tarn": {
+          "decides": [
+            {
+              "person": "fatima_osei",
+              "note": "Cannot sign the DPIA without the data-flow documents.",
+              "cites": [
+                "fo_dpia_2",
+                "fo_needs_3"
+              ]
+            }
+          ],
+          "pays": [
+            {
+              "name": "Tarn Valley's chief finance officer (not met)",
+              "note": "Each force funds its own call-off.",
+              "cites": [
+                "rc_funding_2"
+              ]
+            }
+          ],
+          "uses": [
+            {
+              "name": "Tarn Valley and Norwold operators (not met)",
+              "note": "No live missions yet.",
+              "cites": [
+                "rc_appetite_2"
+              ]
+            }
+          ],
+          "blocks": [
+            {
+              "person": "fatima_osei",
+              "note": "DPIA unsigned; Norwold waits to copy it.",
+              "cites": [
+                "fo_needs_3",
+                "km_others_2"
+              ]
+            },
+            {
+              "name": "Norwold's chief constable (not met)",
+              "note": "Cautious after a local privacy row.",
+              "cites": [
+                "km_others_2"
+              ]
+            }
+          ],
+          "champion": [],
+          "waiting_on": "The data-flow pack (flows, retention, storage location, access controls) that engineering can produce in a week."
+        },
+        "a_westmere": {
+          "decides": [
+            {
+              "name": "Westmere's chief finance officer (not met)",
+              "note": "A force's call-off needs its own finance sign-off.",
+              "cites": [
+                "hd_calloff_2"
+              ]
+            }
+          ],
+          "pays": [
+            {
+              "name": "Westmere force budget",
+              "note": "Each force funds from its own budget.",
+              "cites": [
+                "rc_funding_2"
+              ]
+            }
+          ],
+          "uses": [
+            {
+              "person": "karen_mbeki",
+              "note": "Six officers who also do other duties; scaling needs nine more operators.",
+              "cites": [
+                "km_staff_2"
+              ]
+            }
+          ],
+          "blocks": [
+            {
+              "name": "Overtime cost",
+              "note": "Overtime is the main cost and is not tracked separately for drone work.",
+              "cites": [
+                "km_staff_2",
+                "eb_drone_2"
+              ]
+            }
+          ],
+          "champion": [
+            {
+              "person": "karen_mbeki",
+              "note": "Her battery email of 11 Aug was never answered.",
+              "cites": [
+                "A/emails/2026-08-11_karen_batteries.txt"
+              ]
+            }
+          ],
+          "waiting_on": "A reply to Karen, and a cost per flight against helicopter hours."
+        },
+        "a_tender": {
+          "decides": [
+            {
+              "person": "hannah_doyle",
+              "note": "Runs the formal process; cost per flight and operating model weigh 40%.",
+              "cites": [
+                "hd_weights_1",
+                "draft_tender_spec"
+              ]
+            }
+          ],
+          "pays": [
+            {
+              "name": "Each force's chief finance officer",
+              "note": "Call-offs, not a pooled budget.",
+              "cites": [
+                "hd_calloff_2",
+                "rc_funding_2"
+              ]
+            },
+            {
+              "person": "ewan_brooks",
+              "note": "Metro Central call-off signer's condition.",
+              "cites": [
+                "eb_sign_2"
+              ]
+            }
+          ],
+          "uses": [
+            {
+              "person": "karen_mbeki",
+              "note": "Her unit would have to fly it; nobody has agreed who flies 300 docks.",
+              "cites": [
+                "rc_tender_2",
+                "km_staff_2"
+              ]
+            }
+          ],
+          "blocks": [
+            {
+              "name": "Evaluation against the helicopter contract",
+              "note": "The comparator is the current helicopter air support contract.",
+              "cites": [
+                "hd_weights_1",
+                "eb_heli_1"
+              ]
+            }
+          ],
+          "champion": [
+            {
+              "person": "rhys_calder",
+              "note": "First told us about it; every call since May has been with him alone.",
+              "cites": [
+                "rc_tender_0",
+                "A/profile.json"
+              ]
+            }
+          ],
+          "waiting_on": "Nothing for the spec (it locked and was met). Each call-off will still need its own finance sign-off."
+        }
+      },
+      "moves": [
+        {
+          "key": "a_renewal_proof",
+          "action": "Send Rhys Calder the renewal case: the force-by-month flight log and Karen's verified 14 of 18 docks, and ask in writing who signs each force's call-off before 28 Feb.",
+          "owner": "Hemanth (CSM)",
+          "due": "2026-11-17",
+          "deals": [
+            "a_renewal"
+          ],
+          "why": "Highest open value with a hard end date. It is exactly what would have cleared the blocker this morning.",
+          "cites": [
+            "a_renewal",
+            "flight_log_force_month",
+            "km_usage_1",
+            "rc_funding_2",
+            "hd_calloff_2",
+            "A/contract.txt",
+            "morning_debrief"
+          ]
+        },
+        {
+          "key": "a_tarn_dataflow",
+          "action": "Ask engineering for the data-flow pack today, take ownership of the unanswered support ticket, and tell Fatima Osei the delivery date. Then send her the pack with her own list of needs and the ticket history.",
+          "owner": "Hemanth (CSM); SRV for the pack",
+          "due": "2026-11-16",
+          "deals": [
+            "a_tarn"
+          ],
+          "why": "The only blocker on a 200,000 deal is a document we owe them. Pack in a week, her DPIA in three weeks after that: signed by mid-December if we start Monday.",
+          "cites": [
+            "a_tarn",
+            "srv_dataflow",
+            "fo_needs_3",
+            "pj_ticket",
+            "support_ticket_history",
+            "dataflow_pack",
+            "morning_debrief",
+            "srv"
+          ]
+        },
+        {
+          "key": "a_karen_reply",
+          "action": "Reply to Insp. Karen Mbeki on the battery fault she raised on 11 Aug: replacement dates and one named person to call. Ask her for the dock-by-force list.",
+          "owner": "Hemanth (CSM)",
+          "due": "2026-11-17",
+          "deals": [
+            "a_westmere",
+            "a_renewal"
+          ],
+          "why": "She is the only user champion and has waited three months. The agreed Westmere deal was already put at risk this morning.",
+          "cites": [
+            "karen_mbeki",
+            "A/emails/2026-08-11_karen_batteries.txt",
+            "A/requests.csv",
+            "a_westmere",
+            "km_usage_1"
+          ]
+        },
+        {
+          "key": "a_ewan_overtime",
+          "action": "Ask Ewan Brooks for the drone-operator overtime figure he can pull in a week, to set a cost per flight against the 1,500-pound helicopter hour for his CFO.",
+          "owner": "Hemanth (CSM)",
+          "due": "2026-11-18",
+          "deals": [
+            "a_westmere",
+            "a_renewal"
+          ],
+          "why": "Every force's finance sign-off turns on this number, and only Ewan can produce it.",
+          "cites": [
+            "ewan_brooks",
+            "eb_drone_2",
+            "eb_heli_1",
+            "eb_sign_2",
+            "helicopter_cost_overtime"
+          ]
+        },
+        {
+          "key": "a_hannah_route",
+          "action": "Call Hannah Doyle: confirm how the renewal is bought (direct order or her formal process) and agree she is copied from now on.",
+          "owner": "Hemanth (CSM)",
+          "due": "2026-11-19",
+          "deals": [
+            "a_renewal",
+            "a_tender"
+          ],
+          "why": "She asked to be kept informed in Dec 2025 and has heard nothing since the pilot. Second thread beside Rhys.",
+          "cites": [
+            "hannah_doyle",
+            "hd_silence_3",
+            "A/calls/2025-12-16_pilot_review.txt"
+          ]
+        }
+      ],
+      "risks": [
+        {
+          "key": "stuck:a_renewal",
+          "severity": "red",
+          "turns_bad": "28 Feb 2027: the term ends with no automatic renewal, and each force's finance must sign first",
+          "cites": [
+            "A/contract.txt",
+            "rc_funding_2"
+          ]
+        },
+        {
+          "key": "stuck:a_tarn",
+          "severity": "amber",
+          "turns_bad": "Every week without the pack; Norwold copies Tarn Valley's assessment, so both forces stall together",
+          "cites": [
+            "fo_needs_3",
+            "pj_ticket"
+          ]
+        },
+        {
+          "key": "single_thread",
+          "type": "cold",
+          "severity": "red",
+          "title": "Single-threaded: every call since May was with Rhys Calder alone, and no force contact is on file.",
+          "turns_bad": "The day Rhys is unavailable or moves on",
+          "cites": [
+            "A/profile.json",
+            "rhys_calder"
+          ]
+        },
+        {
+          "key": "karen_unanswered",
+          "type": "cold",
+          "severity": "amber",
+          "title": "Insp. Karen Mbeki's battery email has had no reply since 11 Aug.",
+          "turns_bad": "Already overdue; the champion goes cold",
+          "cites": [
+            "A/emails/2026-08-11_karen_batteries.txt",
+            "karen_mbeki"
+          ]
+        },
+        {
+          "key": "idle_docks",
+          "type": "usage",
+          "severity": "amber",
+          "title": "17 of 35 docks flew nothing in the four weeks from 5 Oct, while online every day.",
+          "turns_bad": "At renewal, when non-flying forces are asked to pay",
+          "cites": [
+            "A/usage_weekly.csv",
+            "rc_appetite_2"
+          ]
+        }
+      ],
+      "gap_owners": {
+        "rc_funding_0": {
+          "who": "Ewan Brooks (Metro Central) and each force's finance",
+          "how": "Ask who approves the call-off and from which budget line.",
+          "cites": [
+            "ewan_brooks",
+            "rc_funding_2"
+          ]
+        },
+        "rc_appetite_0": {
+          "who": "Insp. Karen Mbeki",
+          "how": "Already contradicted: only two forces fly. Confirm with the force-by-month log.",
+          "cites": [
+            "rc_appetite_2",
+            "flight_log_force_month"
+          ]
+        },
+        "rc_stadium_0": {
+          "who": "Insp. Karen Mbeki, then the Westmere superintendent",
+          "how": "Nobody has asked the superintendent; she thinks 30 docks is unrealistic.",
+          "cites": [
+            "kb_stadium_view",
+            "rc_stadium_3"
+          ]
+        }
+      },
+      "gaps": [
+        {
+          "key": "dock_by_force",
+          "title": "Which dock sits at which force",
+          "why": "Needed to show each force its own usage at renewal.",
+          "who": "Insp. Karen Mbeki or the FlytBase field team (install sheets)",
+          "cites": [
+            "A/devices.json",
+            "A/profile.json"
+          ]
+        },
+        {
+          "key": "schedule_2",
+          "title": "How the 350,000 is split across the four forces",
+          "why": "Schedule 2 says who pays what; customer success never got a copy.",
+          "who": "FlytBase Accounts",
+          "cites": [
+            "A/invoices.json",
+            "A/contract.txt"
+          ]
+        },
+        {
+          "key": "ticket_requester",
+          "title": "Who raised the unanswered document request FB-10412",
+          "why": "Probably Tarn Valley's DPO, but the record does not say.",
+          "who": "The FlytBase support desk",
+          "cites": [
+            "A/tickets.json",
+            "pj_ticket"
+          ]
+        }
+      ],
+      "headline_cites": [
+        "a_renewal",
+        "A/contract.txt",
+        "A/usage_weekly.csv"
+      ],
+      "value_basis": {
+        "a_renewal": {
+          "text": "The current order is 350,000 a year; renewing it at the same size.",
+          "cites": [
+            "A/contract.txt",
+            "A/invoices.json"
+          ]
+        },
+        "a_tarn": {
+          "text": "Game sizing once qualified. No quote or force budget on file for it.",
+          "cites": [
+            "a_tarn"
+          ]
+        },
+        "a_westmere": {
+          "text": "Game sizing on agreement. Westmere's own call-off still needs its finance sign-off.",
+          "cites": [
+            "a_westmere",
+            "hd_calloff_2"
+          ]
+        },
+        "a_tender": {
+          "text": "A ceiling for positioning in a 300-dock framework, not an order. Each force calls off separately.",
+          "cites": [
+            "a_tender",
+            "hd_calloff_2",
+            "A/contract.txt"
+          ]
+        }
+      }
+    },
+    "B": {
+      "headline": "Five docks fly 85% of the patrols, the renewal (140,000, ends 31 Jan 2027) goes to a finance team we have never met, and the deputy who knows the rollout is leaving.",
+      "power": {
+        "b_renewal": {
+          "decides": [
+            {
+              "person": "nadia_rahman",
+              "note": "The debrief names her as decider and payer.",
+              "cites": [
+                "morning_debrief"
+              ]
+            }
+          ],
+          "pays": [
+            {
+              "person": "nadia_rahman",
+              "note": "Group finance asked for the quote by plant; plants resent paying for kit they did not choose.",
+              "cites": [
+                "B/emails/2026-10-08_finance_mailbox.txt",
+                "sr_plants_2"
+              ]
+            }
+          ],
+          "uses": [
+            {
+              "person": "beatriz_alonso",
+              "note": "Flies nightly, but the guard contractor does not act on alerts.",
+              "cites": [
+                "ba_use_2"
+              ]
+            }
+          ],
+          "blocks": [
+            {
+              "person": "nadia_rahman",
+              "note": "Finance has booked no saving; the 1.2M figure is a security spreadsheet.",
+              "cites": [
+                "sr_roi_2",
+                "roi_spreadsheet"
+              ]
+            }
+          ],
+          "champion": [
+            {
+              "person": "stefan_roy",
+              "note": "Signed the first order from the security budget; calls the renewal a formality.",
+              "cites": [
+                "B/contract.txt",
+                "B/calls/2026-10-13_check_in.txt"
+              ]
+            }
+          ],
+          "waiting_on": "A per-plant quote for finance, led by the one verified saving: the insurer's premium cut."
+        },
+        "b_idle": {
+          "decides": [
+            {
+              "person": "owen_fitch",
+              "note": "Owns the network that will cut the docks off; offered two engineer days.",
+              "cites": [
+                "of_seg_2",
+                "of_offer_3"
+              ]
+            },
+            {
+              "person": "stefan_roy",
+              "note": "Group security sets the standard.",
+              "cites": [
+                "B/calls/2026-08-25_check_in.txt"
+              ]
+            }
+          ],
+          "pays": [
+            {
+              "name": "The plants, through their share of the security budget",
+              "note": "Several managers resent it.",
+              "cites": [
+                "sr_plants_2"
+              ]
+            }
+          ],
+          "uses": [
+            {
+              "name": "Plant 11 manager and other idle plants (not met)",
+              "note": "Sees the dock as head office's toy; weak network.",
+              "cites": [
+                "ba_other_1",
+                "of_weak_1"
+              ]
+            }
+          ],
+          "blocks": [
+            {
+              "person": "owen_fitch",
+              "note": "Segmentation project in four months, unless exceptions are planned.",
+              "cites": [
+                "of_seg_2",
+                "network_plan"
+              ]
+            }
+          ],
+          "champion": [
+            {
+              "person": "beatriz_alonso",
+              "note": "Wrote the only working playbook in the group and will share it.",
+              "cites": [
+                "ba_playbook_2",
+                "plant7_checklist"
+              ]
+            }
+          ],
+          "waiting_on": "A proposal to Owen Fitch with the network plan, Beatriz's checklist and his own offer of engineer time."
+        },
+        "b_insurance": {
+          "decides": [
+            {
+              "person": "julian_tate",
+              "note": "Owns the insurer relationship.",
+              "cites": [
+                "jt_review_2"
+              ]
+            }
+          ],
+          "pays": [
+            {
+              "person": "nadia_rahman",
+              "note": "Declined flight-log reporting by plant this morning.",
+              "cites": [
+                "b_reporting"
+              ]
+            }
+          ],
+          "uses": [
+            {
+              "name": "The insurer's surveyor (not met)",
+              "note": "Reviews the discount in five months.",
+              "cites": [
+                "jt_review_2"
+              ]
+            }
+          ],
+          "blocks": [
+            {
+              "name": "Idle plants",
+              "note": "Plants with idle docks put the discount at risk.",
+              "cites": [
+                "jt_review_2",
+                "B/usage_weekly.csv"
+              ]
+            }
+          ],
+          "champion": [
+            {
+              "person": "julian_tate",
+              "note": "Nobody in security asked him about the 180,000.",
+              "cites": [
+                "jt_prem_2"
+              ]
+            }
+          ],
+          "waiting_on": "Consistent flight logs by plant, in the form the insurer needs."
+        },
+        "b_sister": {
+          "decides": [
+            {
+              "person": "stefan_roy",
+              "note": "Wants it in front of the sister company this quarter.",
+              "cites": [
+                "B/calls/2026-10-13_check_in.txt",
+                "morning_debrief"
+              ]
+            }
+          ],
+          "pays": [
+            {
+              "person": "nadia_rahman",
+              "note": "The debrief names her as payer.",
+              "cites": [
+                "morning_debrief"
+              ]
+            }
+          ],
+          "uses": [
+            {
+              "name": "The 40-plant sister company (no contact on file)",
+              "note": "Stefan Roy's account only.",
+              "cites": [
+                "B/deal_history.json"
+              ]
+            }
+          ],
+          "blocks": [
+            {
+              "person": "nadia_rahman",
+              "note": "Every number rests on an unverified spreadsheet.",
+              "cites": [
+                "sr_roi_2",
+                "sr_roi_0"
+              ]
+            }
+          ],
+          "champion": [
+            {
+              "person": "stefan_roy",
+              "note": "",
+              "cites": [
+                "B/emails/2026-09-22_stefan_case_study.txt"
+              ]
+            }
+          ],
+          "waiting_on": "Figures finance will stand behind, and a plant willing to be quoted (Beatriz is the obvious one)."
+        }
+      },
+      "moves": [
+        {
+          "key": "b_deputy_knowhow",
+          "action": "Ask Stefan Roy for a two-hour session with his deputy this week to write the rollout down, using Beatriz Alonso's Plant 7 checklist as the template. Ask again for the install list (requested since 22 May).",
+          "owner": "Hemanth (CSM)",
+          "due": "2026-11-16",
+          "deals": [
+            "b_idle"
+          ],
+          "why": "The only dated deadline on the account. Once the deputy leaves, the know-how goes with him.",
+          "cites": [
+            "b_idle",
+            "sr_repl_2",
+            "ba_deputy_0",
+            "ba_playbook_2",
+            "plant7_checklist",
+            "B/calls/2026-05-21_intro_call.txt"
+          ]
+        },
+        {
+          "key": "b_owen_proposal",
+          "action": "Send Owen Fitch a dock-exception plan built from the network plan and the Plant 7 checklist, and take up his offer of two network-engineer days for a pilot at Plants 11 to 14.",
+          "owner": "Hemanth (CSM)",
+          "due": "2026-11-17",
+          "deals": [
+            "b_idle",
+            "b_insurance"
+          ],
+          "why": "Clears the open blocker on the largest open deal (180,000) before segmentation cuts the docks off in four months.",
+          "cites": [
+            "b_idle",
+            "owen_fitch",
+            "of_seg_2",
+            "of_offer_3",
+            "of_weak_1",
+            "network_plan",
+            "plant7_checklist",
+            "morning_debrief"
+          ]
+        },
+        {
+          "key": "b_finance_quote",
+          "action": "Answer Group Finance's email of 8 Oct with the renewal quote by plant, led by the insurer's verified 180,000 premium cut rather than the 1.2M claim, and ask for 30 minutes with Nadia Rahman.",
+          "owner": "Hemanth (CSM); Achal Negi for the quote",
+          "due": "2026-11-18",
+          "deals": [
+            "b_renewal",
+            "b_sister"
+          ],
+          "why": "The payer has written once and been ignored, and the renewal must be signed by 31 Jan.",
+          "cites": [
+            "b_renewal",
+            "nadia_rahman",
+            "B/emails/2026-10-08_finance_mailbox.txt",
+            "jt_prem_2",
+            "insurer_premium_letter",
+            "sr_roi_0",
+            "sr_roi_2",
+            "B/contract.txt",
+            "achal_negi"
+          ]
+        },
+        {
+          "key": "b_julian_surveyor",
+          "action": "Ask Julian Tate to introduce the insurer's surveyor, and agree the flight-log-by-plant format they will accept before building it.",
+          "owner": "Hemanth (CSM)",
+          "due": "2026-11-19",
+          "deals": [
+            "b_insurance"
+          ],
+          "why": "The review is in five months, and two pieces of proof are missing.",
+          "cites": [
+            "b_insurance",
+            "julian_tate",
+            "jt_review_2",
+            "jt_prem_2",
+            "morning_debrief"
+          ]
+        }
+      ],
+      "risks": [
+        {
+          "key": "deadline:b_idle",
+          "severity": "red",
+          "turns_bad": "The day the deputy leaves. Date not on file, so ask Stefan on Monday",
+          "cites": [
+            "sr_repl_2",
+            "ba_deputy_0"
+          ]
+        },
+        {
+          "key": "stuck:b_idle",
+          "severity": "red",
+          "turns_bad": "When network segmentation starts, in about four months, unless exceptions are planned",
+          "cites": [
+            "of_seg_2",
+            "network_plan"
+          ]
+        },
+        {
+          "key": "stuck:b_insurance",
+          "severity": "amber",
+          "turns_bad": "At the insurer's review in about five months",
+          "cites": [
+            "jt_review_2"
+          ]
+        },
+        {
+          "key": "finance_unanswered",
+          "type": "cold",
+          "severity": "red",
+          "title": "Group Finance asked for the renewal quote by plant on 8 Oct. Nobody replied.",
+          "turns_bad": "31 Jan 2027: the term ends with no automatic renewal",
+          "cites": [
+            "B/emails/2026-10-08_finance_mailbox.txt",
+            "B/contract.txt",
+            "B/requests.csv"
+          ]
+        },
+        {
+          "key": "plant11_offline",
+          "type": "usage",
+          "severity": "amber",
+          "title": "Plant 11's dock drops offline for days. The ticket has waited on customer IT since 10 Sep.",
+          "turns_bad": "Already bad; one more idle plant for the insurer to see",
+          "cites": [
+            "B/requests.csv",
+            "ba_other_1"
+          ]
+        },
+        {
+          "key": "flying_concentrated",
+          "type": "usage",
+          "severity": "amber",
+          "title": "Five docks flew 85% of all flights in the four weeks from 5 Oct. \"Thirteen of fifteen flying\" counts any flight at all.",
+          "turns_bad": "When finance or the insurer asks per plant",
+          "cites": [
+            "B/usage_weekly.csv",
+            "sr_roll_0"
+          ]
+        }
+      ],
+      "gap_owners": {
+        "sr_roi_0": {
+          "who": "Nadia Rahman (group finance)",
+          "how": "Finance has booked no saving; ask which part, if any, finance would sign.",
+          "cites": [
+            "sr_roi_2",
+            "roi_spreadsheet"
+          ]
+        },
+        "sr_roll_0": {
+          "who": "Owen Fitch, or the weekly usage log",
+          "how": "The log counts flights per dock; the install list says which plant is which.",
+          "cites": [
+            "B/usage_weekly.csv"
+          ]
+        },
+        "b_renewal": {
+          "who": "Nadia Rahman",
+          "how": "She decides and pays. Ask what finance needs to see per plant.",
+          "cites": [
+            "morning_debrief",
+            "B/emails/2026-10-08_finance_mailbox.txt"
+          ]
+        },
+        "b_sister": {
+          "who": "Stefan Roy for the contact, Nadia Rahman for the numbers",
+          "how": "No contact at the sister company is on file.",
+          "cites": [
+            "B/deal_history.json",
+            "sr_roi_2"
+          ]
+        }
+      },
+      "gaps": [
+        {
+          "key": "deputy_identity",
+          "title": "The deputy's name, contact details and leaving date",
+          "why": "He holds the install list and the rollout method; nothing is written down.",
+          "who": "Stefan Roy, or Beatriz Alonso",
+          "cites": [
+            "B/profile.json",
+            "sr_repl_2"
+          ]
+        },
+        {
+          "key": "dock_by_plant",
+          "title": "Which dock sits at which plant",
+          "why": "Needed for the per-plant quote, the insurer's logs and the idle-plant plan.",
+          "who": "The deputy's install list, through Stefan Roy",
+          "cites": [
+            "B/devices.json",
+            "B/calls/2026-04-23_rollout_close.txt"
+          ]
+        },
+        {
+          "key": "insurer_proof",
+          "title": "A flight log by plant and an insurance pack template (named in the debrief, not held)",
+          "why": "Two pieces missing to prove the fix on the insurance deal.",
+          "who": "Julian Tate, and the insurer's surveyor",
+          "cites": [
+            "morning_debrief",
+            "jt_review_2"
+          ]
+        },
+        {
+          "key": "alert_recipients",
+          "title": "Who receives night alerts at each plant",
+          "why": "At Plant 7 the guard contractor ignores alerts; elsewhere nobody knows.",
+          "who": "Beatriz Alonso for Plant 7; plant managers for the rest",
+          "cites": [
+            "ba_use_2",
+            "B/calls/2026-08-25_check_in.txt"
+          ]
+        }
+      ],
+      "headline_cites": [
+        "B/usage_weekly.csv",
+        "B/contract.txt",
+        "b_renewal",
+        "sr_repl_2"
+      ],
+      "value_basis": {
+        "b_idle": {
+          "text": "Game sizing once qualified. Rests on the network exceptions and someone owning adoption.",
+          "cites": [
+            "b_idle"
+          ]
+        },
+        "b_insurance": {
+          "text": "Equal to half the insurer's verified 180,000-a-year premium cut, which the review in five months decides.",
+          "cites": [
+            "b_insurance",
+            "jt_prem_2",
+            "insurer_premium_letter",
+            "jt_review_2"
+          ]
+        },
+        "b_renewal": {
+          "text": "Not sized in the export yet. The current order is 140,000 a year, ending 31 Jan 2027.",
+          "cites": [
+            "B/contract.txt",
+            "B/invoices.json"
+          ]
+        },
+        "b_sister": {
+          "text": "No figure anywhere on file. Stefan Roy's account only.",
+          "cites": [
+            "B/deal_history.json"
+          ]
+        }
+      }
+    }
+  },
+  "handled_signals": []
+}
