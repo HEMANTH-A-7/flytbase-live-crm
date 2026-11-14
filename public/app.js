@@ -94,7 +94,7 @@ function renderStrip() {
   const lastCall = model.live?.last_call_at;
   const fresh = lastCall && Date.now() - Date.parse(lastCall) < 5 * 60_000;
   live.className = `pill live ${!model.live || !lastCall ? "off" : fresh ? "" : "stale"}`;
-  $("#live-text").textContent = !model.live ? "Seed data" : !lastCall ? "Waiting for first check" : `Live, checked ${ago(lastCall)}${model.live.last_error ? " (last call failed)" : ""}`;
+  $("#live-text").textContent = !model.token_configured ? "Snapshot data, no token on the server" : !lastCall ? "Waiting for first check" : `Live, checked ${ago(lastCall)}${model.live.last_error ? " (last call failed)" : ""}`;
 }
 
 function renderSwitch(a) {
@@ -147,7 +147,7 @@ function panelHead(n, title, note = "") {
 
 function sinceAndLogs(a) {
   const l = model.live;
-  const checked = l?.signals_at ? `Live events last checked ${ago(l.signals_at)}.` : l ? "First check pending." : "This copy runs on the seed snapshot, without a token.";
+  const checked = !model.token_configured ? "This copy runs on the seed snapshot: the server has no MCP token yet." : l?.signals_at ? `Live events last checked ${ago(l.signals_at)}.` : "First check pending.";
   const items = [
     ...a.signals.map((s) => `<li class="ev"><span class="ic">${icon("lightning")}</span><div><div class="when">${esc(s.date ?? "Undated")} · live event</div><p>${esc(s.text)}</p>${chips([s.id, ...s.people])}</div></li>`),
     ...a.changes.map((c) => `<li class="ev change"><span class="ic">${icon("broadcast")}</span><div><div class="when">Account data</div><p>${esc(c.text)}</p>${chips(c.cites)}</div></li>`),

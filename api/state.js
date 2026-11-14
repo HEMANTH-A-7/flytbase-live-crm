@@ -7,7 +7,7 @@ export async function GET() {
   try {
     const model = await getState();
     return Response.json(
-      { ...model, invalid_cites: invalidCites(model) },
+      { ...model, token_configured: Boolean(process.env.AQ_TOKEN), invalid_cites: invalidCites(model) },
       { headers: { "cache-control": "no-store" } },
     );
   } catch (err) {
