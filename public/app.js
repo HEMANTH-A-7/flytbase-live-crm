@@ -9,6 +9,7 @@ let model = null;
 let current = (location.hash.match(/^#(A|B)\b/) ?? [])[1] ?? safeGet("crm-account") ?? "A";
 let lastOk = null;
 let lastFocus = null;
+let railObserver = null;
 
 // ---------- helpers ----------
 
@@ -18,17 +19,16 @@ function esc(s) {
 function safeGet(k) { try { return localStorage.getItem(k); } catch { return null; } }
 function safeSet(k, v) { try { localStorage.setItem(k, v); } catch { /* private mode */ } }
 
+const sym = (cur) => (cur === "GBP" ? "£" : cur === "EUR" ? "€" : "");
 function money(v, cur) {
   if (v == null) return "no value";
-  const sym = cur === "GBP" ? "£" : cur === "EUR" ? "€" : "";
-  return sym + Math.round(v).toLocaleString("en-GB");
+  return sym(cur) + Math.round(v).toLocaleString("en-GB");
 }
 function short(v, cur) {
   if (v == null) return "no value";
-  const sym = cur === "GBP" ? "£" : cur === "EUR" ? "€" : "";
-  if (v >= 1e6) return `${sym}${(v / 1e6).toFixed(2).replace(/\.?0+$/, "")}m`;
-  if (v >= 1e3) return `${sym}${Math.round(v / 1e3)}k`;
-  return sym + v;
+  if (v >= 1e6) return `${sym(cur)}${(v / 1e6).toFixed(2).replace(/\.?0+$/, "")}m`;
+  if (v >= 1e3) return `${sym(cur)}${Math.round(v / 1e3)}k`;
+  return sym(cur) + v;
 }
 function day(iso) {
   if (!iso) return "";
@@ -42,6 +42,7 @@ function ago(iso) {
   if (s < 3600) return `${Math.round(s / 60)} min ago`;
   return `${Math.round(s / 3600)} h ago`;
 }
+const icon = (name) => `<i class="ph ph-${name}" aria-hidden="true"></i>`;
 
 function chipClass(id) {
   const s = model.sources[id];
@@ -60,8 +61,18 @@ const BUCKET = {
   backed: { label: "Backed", hint: "open, with a verified fact or a file we hold" },
   told: { label: "Told only", hint: "open, on someone's word" },
   claim: { label: "Claimed only", hint: "open, on a claim nobody has checked" },
-  unvalued: { label: "No value yet", hint: "" },
 };
+const BUCKET_COLOR = { closed: "#e8edf1", backed: "#4c82b6", told: "#8aa6c1", claim: "#e4b83a" };
+const RISK_TYPE = { deadline: "Deadline", stuck: "Stuck deal", cold: "Going cold", usage: "Usage", signal: "Live event", relationship: "Relationship" };
+const ROLE_LABEL = { decides: "Decides", pays: "Pays", uses: "Uses it", blocks: "Could block", champion: "Champions" };
+const SECTIONS = [
+  ["since", "lightning", "Since this morning"],
+  ["book", "coins", "What is the book worth?"],
+  ["power", "users-three", "Who holds the power?"],
+  ["moves", "list-checks", "What do you do first?"],
+  ["risks", "warning", "What is about to go wrong?"],
+  ["gaps", "question", "What do you still not know?"],
+];
 
 // ---------- render ----------
 
@@ -69,197 +80,260 @@ function render() {
   const a = model.accounts.find((x) => x.id === current) ?? model.accounts[0];
   current = a.id;
   renderStrip();
+  renderSwitch(a);
   renderRail(a);
-  $("#main").innerHTML = [head(a), liveSection(a), book(a), power(a), moves(a), risks(a), gaps(a), log()].join("");
+  $("#main").innerHTML = [hero(a), sinceAndLogs(a), book(a), power(a), moves(a), risks(a), gaps(a), log()].join("");
   document.title = `${a.name} · Account book`;
+  watchSections(a);
 }
 
 function renderStrip() {
   const asof = model.live?.accounts_at ?? model.as_of;
-  $("#asof").innerHTML = `Data as of ${esc(new Date(asof).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }))} · in-world today ${esc(day(model.today))}`;
+  $("#asof").textContent = `Data ${new Date(asof).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}, in-world ${day(model.today)}`;
   const live = $("#live");
   const lastCall = model.live?.last_call_at;
   const fresh = lastCall && Date.now() - Date.parse(lastCall) < 5 * 60_000;
-  live.className = `live ${!model.live || !lastCall ? "off" : fresh ? "" : "stale"}`;
-  $("#live-text").textContent = !model.live ? "Seed data" : !lastCall ? "Waiting for first check" : `Live · checked ${ago(lastCall)}${model.live.last_error ? " (last call failed, showing last good data)" : ""}`;
+  live.className = `pill live ${!model.live || !lastCall ? "off" : fresh ? "" : "stale"}`;
+  $("#live-text").textContent = !model.live ? "Seed data" : !lastCall ? "Waiting for first check" : `Live, checked ${ago(lastCall)}${model.live.last_error ? " (last call failed)" : ""}`;
+}
+
+function renderSwitch(a) {
+  $("#switch").innerHTML = model.accounts.map((x) => {
+    const reds = x.risks.filter((r) => r.severity === "red").length;
+    const words = x.name.split(/\s+/);
+    const shortName = words.length > 2 ? `${words[0]} ${words.at(-1)}` : x.name;
+    return `<button type="button" data-acct="${x.id}" aria-pressed="${x.id === a.id}" aria-label="${esc(x.name)}"><span class="full">${esc(x.name)}</span><span class="short">${esc(shortName)}</span>${reds ? `<span class="count" aria-label="${reds} red risks">${reds}</span>` : ""}</button>`;
+  }).join("");
 }
 
 function renderRail(a) {
-  $("#switch").innerHTML = model.accounts.map((x) => {
-    const reds = x.risks.filter((r) => r.severity === "red").length;
-    return `<button type="button" data-acct="${x.id}" aria-pressed="${x.id === a.id}">
-      <span class="acct-name">${esc(x.name)}</span>
-      <span class="acct-sub">${esc(short(x.book.total.value, x.currency))} on the book · ${reds} red</span>
-    </button>`;
-  }).join("");
+  $("#rail").innerHTML = SECTIONS.map(([id, ic, label], i) => `${i === 1 ? "<hr>" : ""}<a href="#${a.id}-${id}" aria-label="${esc(label)}" data-section="${a.id}-${id}">${icon(ic)}</a>`).join("");
+}
+
+function watchSections(a) {
+  railObserver?.disconnect();
+  if (!("IntersectionObserver" in window)) return;
+  railObserver = new IntersectionObserver((entries) => {
+    for (const en of entries) {
+      if (!en.isIntersecting) continue;
+      document.querySelectorAll("#rail a").forEach((el) => el.classList.toggle("active", el.dataset.section === en.target.id));
+    }
+  }, { rootMargin: "-30% 0px -60% 0px" });
+  SECTIONS.forEach(([id]) => { const el = document.getElementById(`${a.id}-${id}`); if (el) railObserver.observe(el); });
+}
+
+function hero(a) {
+  const b = a.book;
+  const closed = b.segments.find((s) => s.bucket === "closed");
   const reds = a.risks.filter((r) => r.severity === "red").length;
-  const unbacked = a.book.segments.filter((s) => s.bucket === "told" || s.bucket === "claim").reduce((n, s) => n + s.value, 0);
-  const items = [
-    ["book", "What is the book worth?", `${short(a.book.total.value, a.currency)}${unbacked ? `, ${short(unbacked, a.currency)} unbacked` : ", all agreed or backed"}`],
-    ["power", "Who holds the power?", `${a.power.length} deals mapped`],
-    ["moves", "What do you do first?", a.moves[0] ? `First: ${day(a.moves[0].due)}` : "Nothing planned"],
-    ["risks", "What is about to go wrong?", `<span class="${reds ? "red" : ""}">${reds} red</span>, ${a.risks.length - reds} amber`],
-    ["gaps", "What do you still not know?", `${a.gaps.length} gaps`],
-  ];
-  $("#toc").innerHTML = items.map(([id, q, s]) => `<li><a href="#${a.id}-${id}"><span class="q">${q}</span><span class="status">${s}</span></a></li>`).join("");
+  const first = a.moves[0];
+  const stat = (ic, value, label, target, cls = "") => `<button type="button" class="stat ${cls}" data-jump="${a.id}-${target}">
+      <span class="ic">${icon(ic)}</span><span><b>${esc(value)}</b><span>${esc(label)}</span></span></button>`;
+  return `<section class="hero">
+      <h1>${esc(a.name)}</h1>
+      <div class="stats">
+        ${stat("coins", money(b.total.value, a.currency), "on the book, every part sourced", "book")}
+        ${stat("seal-check", money(closed?.value ?? 0, a.currency), "agreed or won", "book")}
+        ${stat("warning", `${reds} red`, `of ${a.risks.length} risks`, "risks", reds ? "red" : "")}
+        ${stat("calendar-dots", first ? day(first.due) : "None", "first move due", "moves")}
+      </div>
+    </section>
+    ${a.headline ? `<div class="headline"><span class="ic">${icon("pulse")}</span><div><p>${esc(a.headline)}</p>${chips(a.headline_cites)}</div></div>` : ""}`;
 }
 
-function head(a) {
-  const u = a.usage;
-  const usage = u ? `${u.docks - u.idle} of ${u.docks} docks flew at least once in the four weeks from ${day(u.from)}; ${u.idle} flew nothing. The busiest five flew ${Math.round(u.top_share * 100)}% of all ${u.flights} flights.` : "No usage log on file.";
-  return `<header class="acct-head">
-    <h1>${esc(a.name)}</h1>
-    ${a.headline ? `<p class="headline">${esc(a.headline)}</p>${chips(a.headline_cites)}` : ""}
-    <div class="story">
-      <div><div class="label">What the account sheet says (unverified)</div><p class="claimed">${esc(a.official_story)}</p></div>
-      <div><div class="label">What the logs say</div><p>${esc(usage)}</p>${u ? chips(u.cites) : ""}</div>
-    </div>
-  </header>`;
+function panelHead(n, title, note = "") {
+  return `<div class="panel-head">${n ? `<span class="qn">${n}</span>` : ""}<h2>${title}</h2>${note ? `<span class="note">${note}</span>` : ""}</div>`;
 }
 
-function liveSection(a) {
+function sinceAndLogs(a) {
   const l = model.live;
   const checked = l?.signals_at ? `Live events last checked ${ago(l.signals_at)}.` : l ? "First check pending." : "This copy runs on the seed snapshot, without a token.";
   const items = [
-    ...a.signals.map((s) => `<li class="ev signal"><span class="ev-when">${esc(s.date ?? "undated")}</span><div><p>${esc(s.text)}</p>${chips([s.id, ...s.people])}</div></li>`),
-    ...a.changes.map((c) => `<li class="ev change"><span class="ev-when">Account data</span><div><p>${esc(c.text)}</p>${chips(c.cites)}</div></li>`),
+    ...a.signals.map((s) => `<li class="ev"><span class="ic">${icon("lightning")}</span><div><div class="when">${esc(s.date ?? "Undated")} · live event</div><p>${esc(s.text)}</p>${chips([s.id, ...s.people])}</div></li>`),
+    ...a.changes.map((c) => `<li class="ev change"><span class="ic">${icon("broadcast")}</span><div><div class="when">Account data</div><p>${esc(c.text)}</p>${chips(c.cites)}</div></li>`),
   ];
-  return `<section class="since" aria-labelledby="${a.id}-since-h">
-    <h2 id="${a.id}-since-h">Since this morning</h2>
-    ${items.length ? `<ol class="events">${items.join("")}</ol>` : `<p class="empty">Nothing new on this account yet. New live events and account changes from the MCP appear here, and in the risks and moves below, without a reload.</p>`}
-    <p class="small muted">${esc(checked)}</p>
-  </section>`;
-}
-
-function qhead(a, id, n, title, aside = "") {
-  return `<div class="q-head"><span class="n">${n}</span><h2 id="${a.id}-${id}-h">${title}</h2></div>${aside ? `<p class="q-note">${aside}</p>` : ""}`;
+  const u = a.usage;
+  return `<div class="grid">
+    <section class="panel q span-7" id="${a.id}-since" aria-labelledby="${a.id}-since-h">
+      <div class="panel-head"><h2 id="${a.id}-since-h">Since this morning</h2></div>
+      ${items.length ? `<ol class="events">${items.join("")}</ol>` : `<div class="empty"><span class="ic">${icon("clock")}</span><p>Nothing new on this account yet. Live events and account changes from the MCP land here, and in the risks and moves below, without a reload.</p></div>`}
+      <p class="checked">${esc(checked)}</p>
+    </section>
+    <section class="panel span-5" aria-label="The account sheet against the logs">
+      <div class="panel-head"><h2>The sheet against the logs</h2></div>
+      <div class="compare">
+        <div><div class="label">What the account sheet says (unverified)</div><p class="claimed">${esc(a.official_story)}</p></div>
+        <div><div class="label">What the usage log shows, four weeks from ${esc(u ? day(u.from) : "")}</div>
+          ${u ? `<div class="metric-row">
+            <div><b>${u.docks - u.idle} of ${u.docks}</b><span>docks flew at least once</span></div>
+            <div><b>${u.idle}</b><span>flew nothing</span></div>
+            <div><b>${Math.round(u.top_share * 100)}%</b><span>of ${u.flights} flights from the top five</span></div>
+          </div>${chips(u.cites)}` : `<p class="muted">No usage log on file.</p>`}
+        </div>
+      </div>
+    </section>
+  </div>`;
 }
 
 function book(a) {
   const b = a.book;
   const total = b.total.value || 1;
-  const segs = b.segments.filter((s) => s.value > 0);
-  const deals = [...b.deals.filter((d) => d.bucket !== "unvalued"), ...b.offers.filter((o) => o.bucket !== "lost")];
-  const rows = deals.map((d) => `<tr class="${d.bucket}">
-      <td><div class="title">${esc(d.title)}</div>
+  const rows = [...b.deals.filter((d) => d.bucket !== "unvalued"), ...b.offers.filter((o) => o.bucket !== "lost")]
+    .sort((x, y) => (y.value ?? 0) - (x.value ?? 0));
+  const max = Math.max(...rows.map((r) => r.value ?? 0), 1);
+  const dealRows = rows.map((d) => `<div class="deal-row">
+      <div>
+        <div class="title">${esc(d.title)}</div>
+        <div class="meta"><span class="tag"><i class="b-${d.bucket}"></i>${esc(BUCKET[d.bucket]?.label ?? d.bucket)}</span>
+          <span>${esc(d.stage ?? d.status)}${d.pitch_to ? `, to ${esc(d.pitch_to)}` : ""}</span>
+          ${d.backing ? `<span>${d.backing.verified.length + d.backing.file.length} verified or file, ${d.backing.told.length} told, ${d.backing.claim.length} claim</span>` : ""}</div>
         ${d.blocker ? `<div class="blocker ${esc(d.blocker.status)}">Blocker (${esc(d.blocker.status)}): ${esc(d.blocker.text)}</div>` : ""}
-        ${chips(d.cites)}</td>
-      <td>${d.stage ? esc(d.stage) : esc(d.status)}${d.pitch_to ? `<div class="small muted">to ${esc(d.pitch_to)}</div>` : ""}</td>
-      <td><span class="tag ${d.bucket}">${esc(BUCKET[d.bucket]?.label ?? d.bucket)}</span>
-        ${d.backing ? `<div class="small muted">${d.backing.verified.length + d.backing.file.length} verified or file, ${d.backing.told.length} told, ${d.backing.claim.length} claim</div>` : ""}</td>
-      <td class="num">${esc(money(d.value, a.currency))}${d.basis ? `<div class="basis">${esc(d.basis.text)}</div>${chips(d.basis.cites)}` : ""}</td>
-    </tr>`).join("");
-  const apart = [
-    ...b.unvalued.map((u) => `<tr class="unvalued"><td><div class="title">${esc(u.title)}</div>${chips(u.cites)}</td><td><span class="tag unvalued">No value yet</span></td><td class="small">${esc(u.basis?.text ?? "Still at identified: not enough known to size it.")}${chips(u.basis?.cites)}</td></tr>`),
-    ...b.claimed.map((c) => `<tr class="unvalued"><td><div class="title">"${esc(c.text)}"</div><div class="small muted">${esc(c.said_by)}</div>${chips(c.cites)}</td><td><span class="tag claim">Claim, not counted</span></td><td class="small">A number nobody has backed with a file.</td></tr>`),
-    ...b.lost.map((l) => `<tr class="lost"><td><div class="title">${esc(l.title)}</div>${chips(l.cites)}</td><td><span class="tag lost">Declined</span></td><td class="num">${esc(money(l.value, a.currency))}</td></tr>`),
-  ].join("");
-  return `<section class="q" id="${a.id}-book" aria-labelledby="${a.id}-book-h">
-    ${qhead(a, "book", 1, "What is the book worth?", "Values are deal sizes from the account export (worth_up_to)")}
-    <div class="prov">
-      <div class="total"><span class="big">${esc(money(b.total.value, a.currency))}</span><span class="muted">on the book, split by how well each part is backed</span></div>
-      <div class="bar" role="img" aria-label="${segs.map((s) => `${BUCKET[s.bucket].label} ${money(s.value, a.currency)}`).join(", ")}">
-        ${segs.map((s) => `<button type="button" class="seg ${s.bucket}" style="flex:${s.value / total}" data-jump="${a.id}-book-table" title="${BUCKET[s.bucket].label}: ${money(s.value, a.currency)} (${Math.round((100 * s.value) / total)}%)"><span class="visually-hidden">${BUCKET[s.bucket].label}</span></button>`).join("")}
+        ${chips(d.cites)}
       </div>
-      <div class="key">${b.segments.map((s) => `<div><i class="${s.bucket}"></i><span><b>${BUCKET[s.bucket].label}</b> ${esc(money(s.value, a.currency))} <span class="muted">· ${BUCKET[s.bucket].hint}</span></span></div>`).join("")}</div>
-    </div>
-    <div class="ledger-wrap"><table class="ledger" id="${a.id}-book-table">
-      <thead><tr><th>Deal or offer, and what backs it</th><th>Stage</th><th>Backing</th><th class="num">Value</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table></div>
-    ${apart ? `<h3 class="sub">Shown apart, not in the total</h3><div class="ledger-wrap"><table class="ledger"><tbody>${apart}</tbody></table></div>` : ""}
-  </section>`;
+      <div><div class="val">${esc(money(d.value, a.currency))}</div>${d.basis ? `<div class="basis">${esc(d.basis.text)}</div>${chips(d.basis.cites)}` : ""}</div>
+      <div class="track" aria-hidden="true"><i class="b-${d.bucket}" style="width:${Math.max(1, (100 * (d.value ?? 0)) / max)}%"></i></div>
+    </div>`).join("");
+  const apart = [
+    ...b.unvalued.map((u) => `<div class="apart-row"><div class="title">${esc(u.title)}</div><div class="side"><span class="tag amber">No value yet</span></div><div class="why">${esc(u.basis?.text ?? "Still at identified: not enough known to size it.")}${chips([...u.cites, ...(u.basis?.cites ?? [])])}</div></div>`),
+    ...b.claimed.map((c) => `<div class="apart-row"><div class="title">"${esc(c.text)}"</div><div class="side"><span class="tag amber">Claim, not counted</span></div><div class="why">${esc(c.said_by)}. A number nobody has backed with a file.${chips(c.cites)}</div></div>`),
+    ...b.lost.map((l) => `<div class="apart-row"><div class="title">${esc(l.title)}</div><div class="side">Declined, ${esc(money(l.value, a.currency))}</div><div class="why">${chips(l.cites)}</div></div>`),
+  ].join("");
+
+  // Donut: one ring segment per bucket, in a fixed order.
+  const R = 70, C = 2 * Math.PI * R;
+  let offset = 0;
+  const arcs = b.segments.filter((s) => s.value > 0).map((s) => {
+    const len = (C * s.value) / total;
+    const arc = `<circle r="${R}" cx="90" cy="90" stroke="${BUCKET_COLOR[s.bucket]}" stroke-dasharray="${Math.max(0, len - 3)} ${C}" stroke-dashoffset="${-offset}"></circle>`;
+    offset += len;
+    return arc;
+  }).join("");
+  const backedShare = Math.round((100 * b.segments.filter((s) => s.bucket === "closed" || s.bucket === "backed").reduce((n, s) => n + s.value, 0)) / total);
+
+  return `<div class="grid">
+    <section class="panel q span-8" id="${a.id}-book" aria-labelledby="${a.id}-book-h">
+      ${panelHead(1, `<span id="${a.id}-book-h">What is the book worth?</span>`, "Deal sizes from the account export (worth_up_to)")}
+      <div class="big"><b>${esc(money(b.total.value, a.currency))}</b><span>on the book, split by how well each part is backed</span></div>
+      <div class="bucket-chips">${b.segments.map((s) => `<span class="tag"><i class="b-${s.bucket}"></i>${BUCKET[s.bucket].label} <span>${esc(short(s.value, a.currency))}</span></span>`).join("")}</div>
+      <div class="deal-rows">${dealRows}</div>
+      ${apart ? `<div class="apart"><h3>Shown apart, not in the total</h3>${apart}</div>` : ""}
+    </section>
+    <section class="panel span-4" aria-label="How well the book is backed">
+      ${panelHead(0, "How well it is backed")}
+      <p class="panel-sub">${backedShare}% of the book is agreed, won, or backed by a verified fact or a file we hold.</p>
+      <div class="donut-wrap">
+        <svg class="donut" viewBox="0 0 180 180" role="img" aria-label="${b.segments.map((s) => `${BUCKET[s.bucket].label} ${money(s.value, a.currency)}`).join(", ")}"><circle class="bg" r="${R}" cx="90" cy="90"></circle>${arcs}</svg>
+        <div class="donut-center"><b>${esc(short(b.total.value, a.currency))}</b><span>on the book</span></div>
+      </div>
+      <div class="legend">${b.segments.map((s) => `<div><i class="b-${s.bucket}"></i><b>${BUCKET[s.bucket].label}</b>${esc(short(s.value, a.currency))}<span>${Math.round((100 * s.value) / total)}%, ${BUCKET[s.bucket].hint}</span></div>`).join("")}</div>
+    </section>
+  </div>`;
 }
-
-const RISK_TYPE = { deadline: "Deadline", stuck: "Stuck deal", cold: "Going cold", usage: "Usage", signal: "Live event", relationship: "Relationship" };
-
-const ROLE_LABEL = { decides: "Decides", pays: "Pays", uses: "Uses it", blocks: "Could block", champion: "Champions" };
 
 function power(a) {
-  const blocks = a.power.map((p) => {
-    const dl = Object.keys(ROLE_LABEL).map((role) => {
+  const cols = a.power.map((p) => {
+    const deal = a.book.deals.find((d) => d.id === p.deal);
+    const cards = Object.keys(ROLE_LABEL).flatMap((role) => {
       const people = p[role];
-      const dd = people.length
-        ? people.map((e) => `<div class="person"><span class="who">${esc(e.name)}</span>${e.role ? `<span class="small muted">, ${esc(e.role)}</span>` : ""}${e.person ? `<span class="stance ${esc(e.stance)}">${esc(e.stance)}</span>` : ""}
-            ${e.note ? `<div class="small">${esc(e.note)}</div>` : ""}${chips([...(e.person ? [e.person] : []), ...e.cites])}</div>`).join("")
-        : `<span class="none">Nobody yet${role === "champion" ? ": this deal has no champion" : ""}</span>`;
-      return `<dt>${ROLE_LABEL[role]}</dt><dd>${dd}</dd>`;
+      if (!people.length) return [`<div class="card none">${ROLE_LABEL[role]}: nobody yet${role === "champion" ? ". This deal has no champion" : ""}</div>`];
+      return people.map((e) => `<div class="card ${e.person ? esc(e.stance) : ""}">
+          <div class="role"><span>${ROLE_LABEL[role]}</span>${e.person ? `<span>${esc(e.stance)}</span>` : ""}</div>
+          <div class="who">${esc(e.name)}</div>
+          ${e.role ? `<div class="what">${esc(e.role)}</div>` : ""}
+          ${e.note ? `<div class="note">${esc(e.note)}</div>` : ""}
+          ${chips([...(e.person ? [e.person] : []), ...e.cites])}
+        </div>`);
     }).join("");
-    return `<article class="deal-power"><h3>${esc(p.title)} <span class="tag ${p.stage === "agreed" ? "closed" : "backed"}">${esc(p.stage)}</span></h3>
-      <dl class="roles">${dl}</dl>
-      ${p.waiting_on ? `<p class="waiting"><b>Waiting on:</b> ${esc(p.waiting_on)}</p>` : ""}
-    </article>`;
+    return `<div class="col">
+      <div class="col-head">
+        <span class="stage"><i class="b-${deal?.bucket === "unvalued" ? "claim" : deal?.bucket ?? "told"}"></i>${esc(p.stage)}</span>
+        <h3>${esc(p.title)}</h3>
+        <span class="v">${esc(money(deal?.value, a.currency))}</span>
+      </div>
+      ${cards}
+      ${p.waiting_on ? `<div class="waiting"><b>Waiting on:</b> ${esc(p.waiting_on)}</div>` : ""}
+    </div>`;
   }).join("");
-  return `<section class="q" id="${a.id}-power" aria-labelledby="${a.id}-power-h">
-    ${qhead(a, "power", 2, "Who holds the power?", "Stance = relationship from the account export")}
-    <div class="power">${blocks}</div>
+  return `<section class="panel q" id="${a.id}-power" aria-labelledby="${a.id}-power-h" style="margin-bottom:18px">
+    ${panelHead(2, `<span id="${a.id}-power-h">Who holds the power?</span>`, "Blue: ally or warm. Yellow: neutral. Grey: not met")}
+    <div class="board">${cols}</div>
   </section>`;
 }
 
-function moveItem(m) {
-  return `<li class="move ${m.source === "signal" ? "signal" : ""}">
-    <div class="rank" aria-label="Rank ${m.rank}">${m.rank}</div>
-    <div>
-      ${m.source === "signal" ? `<div class="live-label">New live event, not yet reviewed</div>` : ""}
-      <p class="action">${esc(m.action)}</p>
-      <div class="facts"><span><b>Owner</b> ${esc(m.owner)}</span><span><b>By</b> ${esc(day(m.due))}${m.overdue ? ` <span class="tag red">Overdue</span>` : ""}</span><span><b>Moves</b> ${esc((m.deals ?? []).map((d) => model.sources[d]?.title ?? d).join("; ") || "the account")}</span></div>
-      ${m.inside ? `<div class="inside"><b>Inside:</b> ${esc(m.inside)}</div>` : ""}
-      <p class="why">${esc(m.why)}</p>
-      ${chips(m.cites)}
+function initials(owner) {
+  return owner.split(";").map((s) => s.replace(/\(.*?\)/g, "").replace(/\b(for|to)\b.*$/i, "").trim()).filter(Boolean).map((n) => {
+    if (/^[A-Z]{2,4}$/.test(n)) return n;
+    return n.split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+  });
+}
+
+function tile(m, i) {
+  const deals = (m.deals ?? []).map((d) => model.sources[d]?.title ?? d).join("; ");
+  return `<article class="tile ${m.source === "signal" ? "signal" : i === 0 ? "first" : ""}">
+    <div class="tile-top"><span>${m.source === "signal" ? `<span class="live-label">New live event</span>` : `By ${esc(day(m.due))}`}${m.overdue ? ` <span class="tag red">Overdue</span>` : ""}</span><span class="rank" aria-label="Rank ${m.rank}">${m.rank}</span></div>
+    <p class="action">${esc(m.action)}</p>
+    <p class="deals">Moves: ${esc(deals || "the account")}</p>
+    ${m.inside ? `<p class="inside">${icon("flag")}<span>${esc(m.inside)}</span></p>` : ""}
+    <p class="why">${esc(m.why)}</p>
+    <div class="tile-foot">
+      <div style="display:flex;align-items:center;gap:8px"><span class="owners">${initials(m.owner).map((x) => `<span>${esc(x)}</span>`).join("")}</span><span class="owner-name">${esc(m.owner)}</span></div>
     </div>
-  </li>`;
+    ${chips(m.cites)}
+  </article>`;
 }
 
 function moves(a) {
   const top = a.moves.slice(0, 3);
   const rest = a.moves.slice(3);
-  return `<section class="q" id="${a.id}-moves" aria-labelledby="${a.id}-moves-h">
-    ${qhead(a, "moves", 3, "What do you do first?", "Ranked by value at stake and how soon it turns bad")}
-    <ol class="moves">${top.map(moveItem).join("")}</ol>
-    ${rest.length ? `<details class="later"><summary>Then ${rest.length} more</summary><ol class="moves">${rest.map(moveItem).join("")}</ol></details>` : ""}
+  return `<section class="panel q" id="${a.id}-moves" aria-labelledby="${a.id}-moves-h" style="margin-bottom:18px">
+    ${panelHead(3, `<span id="${a.id}-moves-h">What do you do first?</span>`, "Ranked by value at stake and how soon it turns bad")}
+    <div class="tiles">${top.map(tile).join("")}</div>
+    ${rest.length ? `<details class="later"><summary>${icon("list-checks")} Then ${rest.length} more</summary><div class="tiles">${rest.map((m, i) => tile(m, i + 3)).join("")}</div></details>` : ""}
   </section>`;
 }
 
 function risks(a) {
-  const rows = a.risks.map((r) => `<tr class="risk ${esc(r.severity)}">
-      <td class="sev"><i aria-hidden="true"></i><span class="visually-hidden">${esc(r.severity)}</span></td>
-      <td><div class="title">${r.live ? '<span class="tag red">Live</span> ' : ""}${esc(r.title)}</div>
-        ${r.turns_bad ? `<div class="turns"><b>Turns bad:</b> ${esc(r.turns_bad)}</div>` : `<div class="turns muted">No date on file for when this turns bad.</div>`}
-        ${chips(r.cites)}</td>
-      <td><span class="tag ${esc(r.severity)}">${esc(r.severity)}</span><div class="small muted">${esc(RISK_TYPE[r.type] ?? "")}</div></td>
-    </tr>`).join("");
-  return `<section class="q" id="${a.id}-risks" aria-labelledby="${a.id}-risks-h">
-    ${qhead(a, "risks", 4, "What is about to go wrong?", "Deadlines, stuck deals, cold people, live events")}
-    <div class="ledger-wrap"><table class="ledger"><thead><tr><th></th><th>Risk, and when it turns bad</th><th>Level</th></tr></thead><tbody>${rows}</tbody></table></div>
+  const rows = a.risks.map((r) => `<div class="risk ${esc(r.severity)}">
+      <div>
+        <div class="title">${esc(r.title)}</div>
+        <div class="turns">${r.turns_bad ? `<b>Turns bad:</b> ${esc(r.turns_bad)}` : "No date on file for when this turns bad."}</div>
+        ${chips(r.cites)}
+      </div>
+      <div class="side"><span class="tag ${r.severity === "red" ? "red" : "amber"}">${r.live ? "Live, " : ""}${esc(r.severity)}</span><span class="type">${esc(RISK_TYPE[r.type] ?? "")}</span></div>
+    </div>`).join("");
+  return `<section class="panel q" id="${a.id}-risks" aria-labelledby="${a.id}-risks-h" style="margin-bottom:18px">
+    ${panelHead(4, `<span id="${a.id}-risks-h">What is about to go wrong?</span>`, "Deadlines, stuck deals, cold people, live events")}
+    <div class="risk-list">${rows}</div>
   </section>`;
 }
 
 function gaps(a) {
-  const rows = a.gaps.map((g) => `<tr>
-      <td><div class="title">${esc(g.title)}</div>${chips(g.cites)}</td>
-      <td class="small">${esc(g.why ?? "")}</td>
-      <td class="small">${g.who ? `<b>${esc(g.who)}</b>${g.how ? `<div class="muted">${esc(g.how)}</div>` : ""}` : `<span class="none">No one identified yet</span>`}</td>
-    </tr>`).join("");
-  return `<section class="q" id="${a.id}-gaps" aria-labelledby="${a.id}-gaps-h">
-    ${qhead(a, "gaps", 5, "What do you still not know?", "Claims nobody checked, deals with no value, missing records")}
-    <div class="ledger-wrap"><table class="ledger"><thead><tr><th>What we do not know</th><th>Why it matters</th><th>Who could tell us</th></tr></thead><tbody>${rows}</tbody></table></div>
+  const cards = a.gaps.map((g) => `<article class="gap ${g.type === "claim" ? "claim" : ""}">
+      <p class="title">${esc(g.title)}</p>
+      <p class="why">${esc(g.why ?? "")}</p>
+      ${chips(g.cites)}
+      <div class="who"><span class="ic">${icon("user-circle")}</span><div>${g.who ? `<b>${esc(g.who)}</b>${g.how ? `<div class="how">${esc(g.how)}</div>` : ""}` : `<span class="err">No one identified yet</span>`}</div></div>
+    </article>`).join("");
+  return `<section class="panel q" id="${a.id}-gaps" aria-labelledby="${a.id}-gaps-h" style="margin-bottom:18px">
+    ${panelHead(5, `<span id="${a.id}-gaps-h">What do you still not know?</span>`, "Claims nobody checked, deals with no value, missing records")}
+    <div class="gap-grid">${cards}</div>
   </section>`;
 }
 
 function log() {
   const l = model.live;
   const written = l?.notes_written ?? [];
-  const pending = (model.pending_notes ?? []).length - written.length;
-  return `<footer class="log">
-    <h2>How this page stays live</h2>
-    <p>The server reads the game's MCP once a minute at most: new live events, fresh account data, and notes written back with <span class="mono">write_note</span>. New events reach this page without a code change or a redeploy.</p>
+  const pending = Math.max(0, (model.pending_notes ?? []).length - written.length);
+  return `<section class="panel log" aria-label="How this page stays live">
+    ${panelHead(0, "How this page stays live")}
+    <p>The server reads the game's MCP once a minute at most: new live events, fresh account data, and notes written back with <span class="mono">write_note</span>. New data reaches this page without a code change or a redeploy.</p>
     <ul>
-      <li>Last MCP call: ${l?.last_call_at ? `${esc(l.last_tool)} ${esc(ago(l.last_call_at))}` : "none yet from this server"}${l?.last_error ? ` · <span class="err">${esc(l.last_error.tool)} failed: ${esc(l.last_error.message)}</span>` : ""}</li>
-      <li>Live events last read: ${esc(l?.signals_at ? ago(l.signals_at) : "not yet")} · accounts last read: ${esc(l?.accounts_at ? ago(l.accounts_at) : "seed snapshot")}</li>
-      <li>Notes written back: ${written.length}${pending > 0 ? ` (${pending} queued)` : ""}${written.length ? `, latest "${esc(written.at(-1).title)}" ${esc(ago(written.at(-1).at))}` : ""}</li>
-      <li>Ids cited that are missing from the data: ${model.invalid_cites?.length ? `<span class="err">${model.invalid_cites.length}</span>` : "none"}</li>
+      <li>Last MCP call: ${l?.last_call_at ? `${esc(l.last_tool)} ${esc(ago(l.last_call_at))}` : "none yet from this server"}${l?.last_error ? `. <span class="err">${esc(l.last_error.tool)} failed: ${esc(l.last_error.message)}</span>` : ""}</li>
+      <li>Live events last read: ${esc(l?.signals_at ? ago(l.signals_at) : "not yet")}. Accounts last read: ${esc(l?.accounts_at ? ago(l.accounts_at) : "seed snapshot")}.</li>
+      <li>Notes written back from this server: ${written.length}${pending ? ` (${pending} queued)` : ""}${written.length ? `, latest "${esc(written.at(-1).title)}" ${esc(ago(written.at(-1).at))}` : ""}.</li>
+      <li>Ids cited that are missing from the data: ${model.invalid_cites?.length ? `<span class="err">${model.invalid_cites.length}</span>` : "none"}.</li>
     </ul>
-  </footer>`;
+  </section>`;
 }
 
 // ---------- evidence drawer ----------
@@ -293,18 +367,18 @@ function openDrawer(id) {
   else if (s.kind === "fact") {
     html = `<blockquote>${esc(s.text)}</blockquote><dl>
       <dt>Said by</dt><dd>${esc(s.said_by)}</dd>
-      <dt>Status</dt><dd><span class="tag ${s.status === "verified" ? "backed" : s.status === "claim" ? "claim" : "told"}">${esc(s.status)}</span> ${s.status === "claim" ? "may be wrong" : s.status === "told" ? "what a person said" : "backed by a file we hold"}</dd>
+      <dt>Status</dt><dd><span class="tag ${s.status === "verified" ? "blue" : s.status === "claim" ? "amber" : ""}">${esc(s.status)}</span> ${s.status === "claim" ? "may be wrong" : s.status === "told" ? "what a person said" : "backed by a file we hold"}</dd>
       <dt>Learned</dt><dd>Minute ${esc(s.learned_at_minute)} of the morning</dd>
       <dt>Account</dt><dd>${esc(s.account)}</dd>
       ${s.verified_by ? `<dt>Verified by</dt><dd>${chips([s.verified_by])}</dd>` : ""}
     </dl>`;
-    if (s.verified_by && model.sources[s.verified_by]) html += `<h3 class="sub">${esc(model.sources[s.verified_by].title)}</h3>${fileBody(model.sources[s.verified_by].content)}`;
+    if (s.verified_by && model.sources[s.verified_by]) html += `<h3>${esc(model.sources[s.verified_by].title)}</h3>${fileBody(model.sources[s.verified_by].content)}`;
   } else if (s.kind === "file") {
     html = `<dl><dt>Account</dt><dd>${esc(s.account)}</dd><dt>Path</dt><dd class="mono">${esc(s.path)}</dd></dl>${fileBody(s.content)}`;
   } else if (s.kind === "person") {
     html = `<dl><dt>Role</dt><dd>${esc(s.role)}</dd><dt>Stance</dt><dd>${esc(s.relationship)}</dd><dt>Available</dt><dd>${s.available === false ? "No" : "Yes"}</dd><dt>Account</dt><dd>${esc(s.account)}</dd></dl>`;
     const said = Object.values(model.sources).filter((x) => x.kind === "fact" && x.said_by === s.title);
-    if (said.length) html += `<h3 class="sub">What ${esc(s.title)} told us</h3>${said.map((f) => `<blockquote class="small">${esc(f.text)} ${chips([f.id])}</blockquote>`).join("")}`;
+    if (said.length) html += `<h3>What ${esc(s.title)} told us</h3>${said.map((f) => `<blockquote class="small">${esc(f.text)} ${chips([f.id])}</blockquote>`).join("")}`;
   } else if (s.kind === "deal") {
     html = `<dl><dt>Stage</dt><dd>${esc(s.stage)}</dd><dt>Worth up to</dt><dd>${esc(s.worth_up_to == null ? "not sized" : s.worth_up_to.toLocaleString("en-GB"))}</dd><dt>Account</dt><dd>${esc(s.account)}</dd></dl>`;
   } else if (s.kind === "offer") {
@@ -343,7 +417,7 @@ function checkNew() {
   const bar = $("#newbar");
   if (!fresh.length) { bar.classList.remove("show"); return; }
   $("#newbar-text").textContent = `${fresh.length} new ${fresh.length > 1 ? "updates" : "update"} since you last looked.`;
-  $("#newbar-detail").textContent = fresh.map((s) => `${s.acct}: ${s.text.slice(0, 90)}${s.text.length > 90 ? "…" : ""}`).join(" · ");
+  $("#newbar-detail").textContent = fresh.map((s) => `${s.acct}: ${s.text.slice(0, 90)}${s.text.length > 90 ? "…" : ""}`).join("  |  ");
   bar.classList.remove("show");
   void bar.offsetWidth; // restart the one reveal animation
   bar.classList.add("show");
@@ -370,7 +444,7 @@ async function load() {
     if (first && /^#[AB]-\w+$/.test(location.hash)) document.getElementById(location.hash.slice(1))?.scrollIntoView();
     checkNew();
   } catch (err) {
-    if (!model) $("#main").innerHTML = `<p class="loading err">Could not load the accounts (${esc(err.message)}). Retrying in a minute.</p>`;
+    if (!model) $("#main").innerHTML = `<p class="loading-err">Could not load the accounts (${esc(err.message)}). Retrying in a minute.</p>`;
     else $("#live-text").textContent = `Offline since ${ago(new Date(lastOk).toISOString())}, showing last good data`;
   }
 }

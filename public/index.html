@@ -3,36 +3,38 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#14202e">
   <title>Account book · FlytBase</title>
   <meta name="description" content="Live CRM for two FlytBase accounts: what the book is worth, who holds the power, what to do first, what is about to go wrong, and what we still do not know. Every number cites its source.">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2314202E'/%3E%3Crect x='6' y='18' width='5' height='8' fill='%23E8EDF1'/%3E%3Crect x='13.5' y='12' width='5' height='14' fill='%232B5C8A'/%3E%3Crect x='21' y='6' width='5' height='20' fill='%23E4B83A'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23E8EDF1'/%3E%3Crect x='7' y='17' width='4.5' height='8' rx='1' fill='%2314202E'/%3E%3Crect x='13.75' y='11' width='4.5' height='14' rx='1' fill='%232B5C8A'/%3E%3Crect x='20.5' y='6' width='4.5' height='19' rx='1' fill='%23E4B83A'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
   <link rel="stylesheet" href="/app.css">
 </head>
 <body>
-  <div class="strip" role="banner">
-    <div class="brand">Account book <span>· two accounts, every number sourced</span></div>
-    <div class="meta" id="asof">Loading…</div>
-    <div class="live off" id="live" aria-live="polite"><span class="dot" aria-hidden="true"></span><span id="live-text">Connecting</span></div>
-  </div>
+  <header class="top">
+    <div class="brand"><span class="brand-mark" aria-hidden="true"><i class="ph ph-book-open"></i></span><span class="label">Account book</span></div>
+    <div class="switch" id="switch" role="group" aria-label="Account"></div>
+    <div class="status">
+      <span class="pill asof" id="asof">Loading</span>
+      <span class="pill live off" id="live" aria-live="polite"><span class="dot" aria-hidden="true"></span><span id="live-text">Connecting</span></span>
+    </div>
+  </header>
   <div class="newbar" id="newbar" role="status" aria-live="assertive">
     <strong id="newbar-text"></strong>
     <span id="newbar-detail"></span>
     <button type="button" id="newbar-ok">Seen</button>
   </div>
 
-  <div class="layout">
-    <nav class="rail" aria-label="Accounts and questions">
-      <div class="switch" id="switch" role="group" aria-label="Account"></div>
-      <p class="toc-label">This account, in five questions</p>
-      <ol class="toc" id="toc"></ol>
-    </nav>
+  <div class="shell">
+    <nav class="rail" id="rail" aria-label="Questions"></nav>
     <main class="main" id="main" tabindex="-1">
       <div class="skeleton" aria-busy="true" aria-label="Loading the accounts">
-        <div class="sk sk-h1"></div><div class="sk sk-line"></div><div class="sk sk-line short"></div>
-        <div class="sk sk-bar"></div><div class="sk sk-row"></div><div class="sk sk-row"></div><div class="sk sk-row"></div>
+        <div class="sk sk-h"></div>
+        <div class="sk-row"><div></div><div></div></div>
+        <div class="sk-row"><div></div><div></div></div>
       </div>
     </main>
   </div>
@@ -45,7 +47,7 @@
         <h2 id="drawer-title"></h2>
         <div class="mono small muted" id="drawer-id"></div>
       </div>
-      <button type="button" class="close" id="drawer-close">Close</button>
+      <button type="button" class="close" id="drawer-close" aria-label="Close"><i class="ph ph-x" aria-hidden="true"></i></button>
     </header>
     <div class="body" id="drawer-body"></div>
   </aside>
