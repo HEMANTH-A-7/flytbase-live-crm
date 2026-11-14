@@ -119,3 +119,24 @@ test("write-back notes have stable titles, so a redeploy never sends one twice",
   assert.deepEqual(a, b);
   assert.equal(new Set(a).size, a.length);
 });
+
+test("changes that arrive through get_my_accounts are listed with their ids", async () => {
+  const { diffAccount } = await import("../lib/analyze.js");
+  const before = seed.export.accounts.find((a) => a.id === "B");
+  const after = structuredClone(before);
+  after.facts.push({ id: "nr_budget_1", text: "Finance will fund the renewal from the group budget.", said_by: "Nadia Rahman", status: "told", learned_at_minute: 150 });
+  after.opportunities.find((o) => o.id === "b_idle").blocker.status = "cleared";
+  after.stakeholders.find((p) => p.id === "nadia_rahman").relationship = "warm";
+  const kinds = diffAccount(before, after).map((c) => c.kind).sort();
+  assert.deepEqual(kinds, ["blocker", "new_fact", "stance"]);
+  const m = build({ exp: { ...seed.export, accounts: seed.export.accounts.map((a) => (a.id === "B" ? after : a)) }, seedExport: seed.export });
+  assert.equal(m.accounts.find((a) => a.id === "B").changes.length, 3);
+  assert.deepEqual(invalidCites(m), [], "the new fact id is citable once it arrives");
+});
+
+test("a dated live event moves in-world today forward, and older moves show as overdue", () => {
+  const m = build({ signals: { signals: [{ id: "s_late", account: "A", date: "30 Nov", text: "Something happened." }] } });
+  assert.equal(m.today, "2026-11-30");
+  assert.ok(m.accounts.find((a) => a.id === "A").moves.some((x) => x.overdue));
+  assert.ok(build().accounts.every((a) => a.moves.every((x) => !x.overdue)));
+});

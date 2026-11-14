@@ -70,7 +70,7 @@ function render() {
   current = a.id;
   renderStrip();
   renderRail(a);
-  $("#main").innerHTML = [head(a), book(a), power(a), moves(a), risks(a), gaps(a), log()].join("");
+  $("#main").innerHTML = [head(a), liveSection(a), book(a), power(a), moves(a), risks(a), gaps(a), log()].join("");
   document.title = `${a.name} · Account book`;
 }
 
@@ -117,8 +117,22 @@ function head(a) {
   </header>`;
 }
 
+function liveSection(a) {
+  const l = model.live;
+  const checked = l?.signals_at ? `Live events last checked ${ago(l.signals_at)}.` : l ? "First check pending." : "This copy runs on the seed snapshot, without a token.";
+  const items = [
+    ...a.signals.map((s) => `<li class="ev signal"><span class="ev-when">${esc(s.date ?? "undated")}</span><div><p>${esc(s.text)}</p>${chips([s.id, ...s.people])}</div></li>`),
+    ...a.changes.map((c) => `<li class="ev change"><span class="ev-when">Account data</span><div><p>${esc(c.text)}</p>${chips(c.cites)}</div></li>`),
+  ];
+  return `<section class="since" aria-labelledby="${a.id}-since-h">
+    <h2 id="${a.id}-since-h">Since this morning</h2>
+    ${items.length ? `<ol class="events">${items.join("")}</ol>` : `<p class="empty">Nothing new on this account yet. New live events and account changes from the MCP appear here, and in the risks and moves below, without a reload.</p>`}
+    <p class="small muted">${esc(checked)}</p>
+  </section>`;
+}
+
 function qhead(a, id, n, title, aside = "") {
-  return `<div class="q-head"><span class="n">${n}</span><h2 id="${a.id}-${id}-h">${title}</h2>${aside ? `<span class="aside">${aside}</span>` : ""}</div>`;
+  return `<div class="q-head"><span class="n">${n}</span><h2 id="${a.id}-${id}-h">${title}</h2></div>${aside ? `<p class="q-note">${aside}</p>` : ""}`;
 }
 
 function book(a) {
@@ -132,7 +146,7 @@ function book(a) {
         ${chips(d.cites)}</td>
       <td>${d.stage ? esc(d.stage) : esc(d.status)}${d.pitch_to ? `<div class="small muted">to ${esc(d.pitch_to)}</div>` : ""}</td>
       <td><span class="tag ${d.bucket}">${esc(BUCKET[d.bucket]?.label ?? d.bucket)}</span>
-        ${d.backing ? `<div class="small muted">${d.backing.verified.length + d.backing.file.length} verified or file · ${d.backing.told.length} told · ${d.backing.claim.length} claim</div>` : ""}</td>
+        ${d.backing ? `<div class="small muted">${d.backing.verified.length + d.backing.file.length} verified or file, ${d.backing.told.length} told, ${d.backing.claim.length} claim</div>` : ""}</td>
       <td class="num">${esc(money(d.value, a.currency))}${d.basis ? `<div class="basis">${esc(d.basis.text)}</div>${chips(d.basis.cites)}` : ""}</td>
     </tr>`).join("");
   const apart = [
@@ -188,7 +202,7 @@ function moveItem(m) {
     <div>
       ${m.source === "signal" ? `<div class="live-label">New live event, not yet reviewed</div>` : ""}
       <p class="action">${esc(m.action)}</p>
-      <div class="facts"><span><b>Owner</b> ${esc(m.owner)}</span><span><b>By</b> ${esc(day(m.due))}</span><span><b>Moves</b> ${esc((m.deals ?? []).map((d) => model.sources[d]?.title ?? d).join("; ") || "the account")}</span></div>
+      <div class="facts"><span><b>Owner</b> ${esc(m.owner)}</span><span><b>By</b> ${esc(day(m.due))}${m.overdue ? ` <span class="tag red">Overdue</span>` : ""}</span><span><b>Moves</b> ${esc((m.deals ?? []).map((d) => model.sources[d]?.title ?? d).join("; ") || "the account")}</span></div>
       ${m.inside ? `<div class="inside"><b>Inside:</b> ${esc(m.inside)}</div>` : ""}
       <p class="why">${esc(m.why)}</p>
       ${chips(m.cites)}
@@ -319,13 +333,16 @@ function closeDrawer() {
 // ---------- new-since-you-looked ----------
 
 function checkNew() {
-  const all = model.accounts.flatMap((a) => a.signals.map((s) => ({ ...s, acct: a.name })));
+  const all = model.accounts.flatMap((a) => [
+    ...a.signals.map((s) => ({ id: s.id, text: s.text, acct: a.name })),
+    ...a.changes.map((c) => ({ id: `change:${c.key}`, text: c.text, acct: a.name })),
+  ]);
   let seen;
   try { seen = new Set(JSON.parse(safeGet(SEEN_KEY) ?? "[]")); } catch { seen = new Set(); }
   const fresh = all.filter((s) => !seen.has(s.id));
   const bar = $("#newbar");
   if (!fresh.length) { bar.classList.remove("show"); return; }
-  $("#newbar-text").textContent = `${fresh.length} new live event${fresh.length > 1 ? "s" : ""} since you last looked.`;
+  $("#newbar-text").textContent = `${fresh.length} new ${fresh.length > 1 ? "updates" : "update"} since you last looked.`;
   $("#newbar-detail").textContent = fresh.map((s) => `${s.acct}: ${s.text.slice(0, 90)}${s.text.length > 90 ? "…" : ""}`).join(" · ");
   bar.classList.remove("show");
   void bar.offsetWidth; // restart the one reveal animation
