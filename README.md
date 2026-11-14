@@ -1,5 +1,7 @@
 # Account book
 
+**Live:** https://flytbase-live-crm-psi.vercel.app
+
 A live CRM for two FlytBase accounts: Eastern Counties Police Alliance (A) and Aldermoor Industrial Group (B). It is the page you would hand your manager on Monday. For each account it answers five questions, and every number on it opens the record it came from.
 
 1. **What is the book worth?** Each deal at its value, split by how well it is backed: agreed or won, backed by a verified fact or a file we hold, told only, or claimed only. Deals with no value and numbers nobody has backed are shown apart and never added.
