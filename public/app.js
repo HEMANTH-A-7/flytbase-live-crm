@@ -86,7 +86,7 @@ function render() {
   renderStrip();
   renderSwitch(a);
   renderRail(a);
-  $("#main").innerHTML = [hero(a), sinceAndLogs(a), book(a), power(a), moves(a), risks(a), gaps(a), log()].join("");
+  $("#main").innerHTML = [scorecard(), hero(a), sinceAndLogs(a), book(a), power(a), moves(a), risks(a), gaps(a), log()].join("");
   document.title = `${a.name} · Account book`;
   watchSections(a);
 }
@@ -124,6 +124,22 @@ function watchSections(a) {
     }
   }, { rootMargin: "-30% 0px -60% 0px" });
   SECTIONS.forEach(([id]) => { const el = document.getElementById(`${a.id}-${id}`); if (el) railObserver.observe(el); });
+}
+
+// The morning game result, as the leaderboard shows it. The closed total is
+// checked against the one this page computes from the deals.
+function scorecard() {
+  const p = model.player;
+  if (!p) return "";
+  const item = (value, label) => `<div class="sc-item"><b>${esc(value)}</b><span>${esc(label)}</span></div>`;
+  return `<section class="scorecard" aria-label="Morning scorecard">
+    <div class="sc-who"><span class="sc-rank">${p.rank}<sup>rd</sup></span><div><b>${esc(p.player)}</b><span>of ${p.players} players, score ${p.score}</span></div></div>
+    ${item(p.closed_label.replace(" closed", ""), "closed")}
+    ${item(p.insight, "insight")}
+    ${item(p.people_unlocked, "people unlocked")}
+    ${item(p.moves, "moves")}
+    <div class="sc-check">${p.closed_matches ? `<span class="tag green">${icon("check")}Closed matches this CRM: ${p.computed_closed.toLocaleString("en-GB")}</span>` : `<span class="tag red">Closed differs from this CRM: ${p.computed_closed.toLocaleString("en-GB")}</span>`}${chips(p.cites)}</div>
+  </section>`;
 }
 
 function hero(a) {
@@ -394,7 +410,7 @@ function fileBody(content) {
   return `<pre>${esc(JSON.stringify(content, null, 1))}</pre>`;
 }
 
-const KIND = { fact: "Fact", file: "File we hold", person: "Person", deal: "Deal", offer: "Offer", record: "Paperwork record", signal: "Live event", team: "FlytBase team", debrief: "Morning debrief" };
+const KIND = { game: "Game result", fact: "Fact", file: "File we hold", person: "Person", deal: "Deal", offer: "Offer", record: "Paperwork record", signal: "Live event", team: "FlytBase team", debrief: "Morning debrief" };
 
 function showDrawer(kind, title, id, html) {
   lastFocus = document.activeElement;
@@ -434,6 +450,8 @@ function openSource(id) {
     html = `<dl><dt>Account</dt><dd>${esc(s.account)}</dd><dt>Type</dt><dd>${esc(s.record_kind)}</dd>${s.via ? `<dt>Arrived with</dt><dd>${chips([s.via])}</dd>` : ""}</dl>${csvTable(s.text) ?? `<pre>${esc(s.text)}</pre>`}`;
   } else if (s.kind === "signal") {
     html = `<blockquote>${esc(s.text)}</blockquote><dl><dt>Date</dt><dd>${esc(s.date ? day(s.date) : "not given")}</dd><dt>Account</dt><dd>${esc(s.account ?? "not given")}</dd></dl>`;
+  } else if (s.kind === "game") {
+    html = s.text.split("\n\n").map((p, i) => (i ? `<blockquote class="small">${esc(p)}</blockquote>` : `<p class="small muted" style="margin-bottom:12px">${esc(p)}</p>`)).join("");
   } else if (s.kind === "debrief") {
     html = s.text.split("\n\n").map((p, i) => (i ? `<blockquote class="small">${esc(p)}</blockquote>` : `<p class="small muted" style="margin-bottom:12px">${esc(p)}</p>`)).join("");
   } else {

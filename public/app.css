@@ -452,3 +452,23 @@ button:active:not(:disabled), .chip:active, .stat:active { transform: translateY
   .metric-row { grid-template-columns: 1fr 1fr; }
   .drawer { top: 0; right: 0; bottom: 0; width: 100vw; border-radius: 0; }
 }
+
+/* ---------- morning scorecard ---------- */
+.scorecard {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px 26px; margin-bottom: 22px;
+  padding: 12px 18px; border-radius: var(--r-panel);
+  background: linear-gradient(90deg, var(--blue-tint), var(--green-tint));
+}
+.sc-who { display: flex; align-items: center; gap: 12px; padding-right: 22px; border-right: 1px solid rgb(20 32 46 / 0.12); }
+.sc-rank { font-size: var(--s3); font-weight: 700; letter-spacing: -0.03em; color: var(--blue); line-height: 1; }
+.sc-rank sup { font-size: 0.45em; vertical-align: top; margin-left: 1px; }
+.sc-who b { display: block; font-weight: 650; }
+.sc-who div span, .sc-item span { display: block; font-size: var(--s-1); color: var(--ink-2); }
+.sc-item b { display: block; font-size: var(--s1); font-weight: 650; line-height: 1.1; }
+.sc-check { margin-left: auto; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.sc-check .chips { margin-top: 0; }
+@media (max-width: 760px) {
+  .scorecard { gap: 10px 18px; }
+  .sc-who { border-right: 0; padding-right: 0; flex-basis: 100%; }
+  .sc-check { margin-left: 0; }
+}

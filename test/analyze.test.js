@@ -7,7 +7,7 @@ const seed = loadSeed();
 const plan = loadPlan();
 const build = (extra = {}) => buildModel({
   exp: seed.export, files: seed.files, signals: seed.signals, plan, debrief: seed.debrief,
-  team: seed.team, paperwork: seed.paperwork, ...extra,
+  team: seed.team, paperwork: seed.paperwork, playerCard: seed.playerCard, ...extra,
 });
 
 test("every id the CRM cites exists in the data (no invented ids)", () => {
@@ -190,4 +190,13 @@ test("the real live events are read: date, records and reviewed moves", () => {
   assert.ok(build().sources["A/requests.csv#urgent_request"], "a row added to an existing log gets its own id");
   assert.ok(a.moves.every((m) => m.source !== "signal"), "both events are reviewed in the plan");
   assert.equal(a.moves[0].key, "a_karen_event");
+});
+
+test("the morning scorecard is cited, and its closed total matches the one the CRM computes", () => {
+  const m = build();
+  assert.ok(m.sources.player_card, "scorecard is a citable source");
+  assert.equal(m.player.closed, 1905000);
+  assert.equal(m.player.computed_closed, 1905000);
+  assert.ok(m.player.closed_matches);
+  assert.deepEqual(invalidCites(m), []);
 });

@@ -1,0 +1,14 @@
+{
+ "source": "Account Quest leaderboard and map header (game UI), copied 14 Nov 2026. The MCP and REST API do not expose these numbers.",
+ "player": "Amarthi Hemanth",
+ "rank": 3,
+ "players": 139,
+ "score": 59,
+ "score_parts": { "deal_value": 14, "insight": 26, "people_unlocked": 20 },
+ "closed": 1905000,
+ "closed_label": "$1.91M closed",
+ "insight": 243,
+ "people_unlocked": 6,
+ "moves": 146,
+ "map_header": { "insight": 243, "closed": 1905000, "people": 10, "deals": 8 }
+}

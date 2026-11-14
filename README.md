@@ -18,7 +18,7 @@ Requires Node 22.9 or later. There are no runtime dependencies.
 
 ```sh
 cp .env.example .env          # then put your token after AQ_TOKEN=
-npm test                      # 27 tests, including "no invented ids"
+npm test                      # 28 tests, including "no invented ids"
 npm run dev                   # http://localhost:3000
 ```
 
