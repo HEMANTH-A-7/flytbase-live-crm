@@ -73,3 +73,12 @@ test("live events accumulate: a stale empty read never hides events already held
   assert.deepEqual(mergeSignals(seedSig, { signals: [] }).signals.map((s) => s.id), ["a"]);
   assert.deepEqual(mergeSignals(seedSig, { signals: [{ id: "a", text: "one, updated" }, { id: "b", text: "two" }] }).signals.map((s) => `${s.id}:${s.text}`), ["a:one, updated", "b:two"]);
 });
+
+test("paperwork for any open account we do not hold is fetched without being asked", () => {
+  const ov = { ...emptyOverlay(), signalsAt: "t" };
+  applyResult(ov, { tool: "whoami" }, { new_accounts: [], pack: [{ account: "A", open: true }, { account: "K", open: true }] }, 0);
+  const job = nextJob(ov, [], new Set(), new Set(["A"]));
+  assert.deepEqual([job.tool, job.args.account], ["get_all_paperwork", "K"]);
+  applyResult(ov, job, { account: "K", records: [{ path: "usage_weekly.csv", kind: "usage", text: "week_start,dock_id,flights,days_online\n2026-11-02,K-1,0,7" }] }, 0);
+  assert.notEqual(nextJob(ov, [], new Set(), new Set(["A"])).tool, "get_all_paperwork");
+});

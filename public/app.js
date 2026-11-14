@@ -509,10 +509,13 @@ function closeDrawer() {
 // ---------- new-since-you-looked ----------
 
 function checkNew() {
-  const all = model.accounts.flatMap((a) => [
+  const all = [
+    ...(model.unassigned_signals ?? []).map((s) => ({ id: s.id, text: s.title ?? s.text, acct: s.account ? `Account ${s.account}, not loaded yet` : "Unassigned" })),
+    ...model.accounts.flatMap((a) => [
     ...a.signals.map((s) => ({ id: s.id, text: s.title ?? s.text, acct: a.name })),
     ...a.changes.map((c) => ({ id: `change:${c.key}`, text: c.text, acct: a.name })),
-  ]);
+    ]),
+  ];
   let seen;
   try { seen = new Set(JSON.parse(safeGet(SEEN_KEY) ?? "[]")); } catch { seen = new Set(); }
   const fresh = all.filter((s) => !seen.has(s.id));

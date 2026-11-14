@@ -221,3 +221,8 @@ test("usage rows that arrive with an event are added before the four weeks are t
   assert.equal(b.usage.to, "2026-11-23", "the window now ends with the event's rows");
   assert.ok(b.usage.cites.includes("B/usage_weekly.csv#usage_drop"));
 });
+
+test("an event for an account that has not loaded yet is still surfaced", () => {
+  const m = build({ signals: { signals: [...seed.signals.signals, { id: "z1", account: "Z", text: "Something at a new account." }] } });
+  assert.ok(m.unassigned_signals.some((s) => s.id === "z1"));
+});

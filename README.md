@@ -18,7 +18,7 @@ Requires Node 22.9 or later. There are no runtime dependencies.
 
 ```sh
 cp .env.example .env          # then put your token after AQ_TOKEN=
-npm test                      # 30 tests, including "no invented ids"
+npm test                      # 32 tests, including "no invented ids"
 npm run dev                   # http://localhost:3000
 ```
 
@@ -47,7 +47,7 @@ The game allows **one call per minute per token**, writes included. There is no 
 1. `get_signals`, the first time an instance starts
 2. `list_notes`, once, so notes already on the server are never sent again
 3. `write_note` for the next pending note (top three moves per account, every red risk), never twice in a row
-4. `whoami`, and for any account it lists under `new_accounts`, `get_new_account` and then `get_new_account_file` for each of its files, before anything else
+4. `whoami`, and for any account it lists under `new_accounts`, `get_new_account` and then `get_new_account_file` for each of its files; then `get_all_paperwork` for any open account whose paperwork we do not hold
 5. otherwise rotate `get_signals`, `whoami` and `get_my_accounts`
 
 The browser polls once a minute. A failed or rate-limited call keeps the last good data and is reported in the page footer. A new live event the plan has never seen:
@@ -71,6 +71,8 @@ The token stays in a server environment variable. It never reaches the browser, 
 - **Draft writer:** each move has a ready message to the customer, quoting the evidence with its ids and never a claim, plus the internal request with an owner and a date.
 
 ## Accounts released later
+
+Rule: new data from the MCP renders by itself. The reviewed plan only adds judgement on top; nothing waits for it.
 
 The game can release a new account at any time (`whoami` lists it under `new_accounts`). The live loop fetches it and its files by itself, and the page shows it next to the others. Until it is reviewed in `data/plan.json`, it is analysed by rule and says so: roles are inferred from titles and from what each person said, moves come from open blockers and unsized deals, and deadlines counted in game minutes become days left on that account's own clock.
 
