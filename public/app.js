@@ -103,6 +103,8 @@ function renderStrip() {
 }
 
 function renderSwitch(a) {
+  // With more than three accounts, short names keep every pill visible.
+  $("#switch").classList.toggle("many", model.accounts.length > 3);
   $("#switch").innerHTML = model.accounts.map((x) => {
     const reds = x.risks.filter((r) => r.severity === "red").length;
     const words = x.name.split(/\s+/);

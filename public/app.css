@@ -472,3 +472,6 @@ button:active:not(:disabled), .chip:active, .stat:active { transform: translateY
   .sc-who { border-right: 0; padding-right: 0; flex-basis: 100%; }
   .sc-check { margin-left: 0; }
 }
+.switch.many .full { display: none; }
+.switch.many .short { display: inline; }
+.switch.many button { padding: 8px 13px; }
