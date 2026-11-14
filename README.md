@@ -14,7 +14,7 @@ Data comes from the Account Quest MCP. Live events arrive while the page is open
 
 ## Run it
 
-Requires Node 22.9 or later. There are no runtime dependencies.
+Requires Node 22.9 or later. One runtime dependency, @vercel/blob, for the shared live state.
 
 ```sh
 cp .env.example .env          # then put your token after AQ_TOKEN=
@@ -41,6 +41,8 @@ vercel --prod
 Turn off deployment protection, so the page opens in a private window without a Vercel login.
 
 ## How it stays live
+
+The live state (events, released accounts, files, paperwork, notes already written) is shared between server copies through a private Vercel Blob. Copies merge what they learn instead of overwriting each other, and re-read the shared state at most once a minute. Without a Blob token (on a laptop) it falls back to a local file.
 
 The game allows **one call per minute per token**, writes included. There is no long-running process. Instead, every request to `/api/state` may spend at most one call, and only when the minute window is open (`lib/live.js`):
 
@@ -96,7 +98,7 @@ api/health.js     GET: is a token configured (never its value)
 lib/mcp.js        JSON-RPC client: JSON or SSE replies, one-call-a-minute gate, 429 backoff
 lib/live.js       one due call per request, call priority, write-back de-duplication
 lib/analyze.js    pure functions: raw data in, five answers out
-lib/store.js      seed snapshot loader and the small live overlay
+lib/store.js      seed snapshot loader, and the live state shared between server copies (private Vercel Blob)
 data/seed/        snapshot of the game data (no secrets)
 data/plan.json    analyst judgement: power roles, ranked moves, risk timing, gap owners
 public/           the page: vanilla HTML, CSS and JS, no build step
@@ -108,4 +110,3 @@ test/             node:test suites
 
 - Moves come from the plan. A new event gets a sensible default move, but re-ranking the whole plan after an event still takes a person.
 - Paperwork is read once into the seed. Only accounts and live events are re-read live, because the paperwork is history and the call budget is one a minute.
-- The live overlay is kept per server instance. A cold start rebuilds it within a call or two.
