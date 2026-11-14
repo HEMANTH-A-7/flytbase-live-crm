@@ -10,15 +10,15 @@ process.env.CRM_OVERLAY_FILE = path.join(os.tmpdir(), `crm-test-${process.pid}.j
 
 const note = (t) => ({ title: t, text: "x", account: "A", kind: "next_step" });
 
-test("call priority: signals, whoami, new accounts and their files, then notes, then poll", () => {
+test("call priority: whoami, new accounts, events, files, then notes, then poll", () => {
   const ov = emptyOverlay();
-  assert.equal(nextJob(ov, []).tool, "get_signals");
-  ov.signalsAt = "t";
-  assert.equal(nextJob(ov, []).tool, "whoami");
+  assert.equal(nextJob(ov, []).tool, "whoami", "discovery comes first on a fresh server copy");
   applyResult(ov, { tool: "whoami" }, { new_accounts: [{ id: "K", name: "Kestrel Estates" }] }, 0);
   const fetch = nextJob(ov, []);
-  assert.deepEqual([fetch.tool, fetch.args.account], ["get_new_account", "K"], "a released account is fetched without being asked");
+  assert.deepEqual([fetch.tool, fetch.args.account], ["get_new_account", "K"], "a released account is fetched on the second call");
   applyResult(ov, fetch, { accounts: [{ id: "K" }], files: [{ id: "K_f1" }] }, 0);
+  assert.equal(nextJob(ov, []).tool, "get_signals");
+  ov.signalsAt = "t";
   const file = nextJob(ov, []);
   assert.deepEqual([file.tool, file.args.file_id], ["get_new_account_file", "K_f1"]);
   applyResult(ov, file, { id: "K_f1", text: "note" }, 0);
@@ -57,7 +57,11 @@ test("a new signal from the MCP shows up in the next state, and failures keep th
   gate.seed(0);
   const sig = { signals: [{ id: "s1", account: "B", date: "30 Nov", text: "Three docks that flew most nights stopped for two weeks." }] };
   // get_signals is the first job on a fresh overlay
-  let m = await getState({ call: async () => sig, now: Date.now() });
+  // The fake MCP answers by tool: whoami first (nothing new), then the events.
+  const fake = async (tool) => (tool === "whoami" ? { new_accounts: [], pack: [] } : sig);
+  await getState({ call: fake, now: Date.now() });
+  gate.seed(0);
+  let m = await getState({ call: fake, now: Date.now() + 61_000 });
   assert.ok(m.accounts.find((a) => a.id === "B").signals.some((s) => s.id === "s1"));
   // force the window open again and make the next call fail
   m.live && gate.seed(0);
