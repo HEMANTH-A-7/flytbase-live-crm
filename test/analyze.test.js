@@ -57,6 +57,24 @@ test("five answers exist for both accounts, and moves are ranked, owned and date
   }
 });
 
+test("the first three moves are in the order you would do them, each inside a stated deadline", () => {
+  for (const a of build().accounts) {
+    const top = a.moves.slice(0, 3);
+    const dues = top.map((m) => m.due);
+    assert.deepEqual(dues, [...dues].sort(), `${a.id}: rank order and due dates disagree: ${dues}`);
+    for (const m of top) assert.ok(m.inside, `${a.id} ${m.key}: say which deadline it sits inside`);
+  }
+});
+
+test("risks and gaps read as sentences: no raw ids or undefined in titles", () => {
+  for (const a of build().accounts) {
+    for (const r of a.risks) {
+      assert.ok(!/undefined|\b[ab]_[a-z]+\b/.test(`${r.title} ${r.turns_bad ?? ""}`), `${a.id} ${r.key}: "${r.title}"`);
+    }
+    for (const g of a.gaps) assert.ok(g.why && g.who, `${a.id} gap ${g.key} needs why and who`);
+  }
+});
+
 test("backing: a held file or verified fact backs a deal; claims alone do not", () => {
   const src = { f: { kind: "fact", status: "claim" }, v: { kind: "fact", status: "verified" }, file1: { kind: "file" } };
   assert.equal(backingOf(["f"], src).level, "claim");

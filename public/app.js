@@ -95,7 +95,7 @@ function renderRail(a) {
   const reds = a.risks.filter((r) => r.severity === "red").length;
   const unbacked = a.book.segments.filter((s) => s.bucket === "told" || s.bucket === "claim").reduce((n, s) => n + s.value, 0);
   const items = [
-    ["book", "What is the book worth?", `${short(a.book.total.value, a.currency)}${unbacked ? `, ${short(unbacked, a.currency)} unbacked` : ", all backed or closed"}`],
+    ["book", "What is the book worth?", `${short(a.book.total.value, a.currency)}${unbacked ? `, ${short(unbacked, a.currency)} unbacked` : ", all agreed or backed"}`],
     ["power", "Who holds the power?", `${a.power.length} deals mapped`],
     ["moves", "What do you do first?", a.moves[0] ? `First: ${day(a.moves[0].due)}` : "Nothing planned"],
     ["risks", "What is about to go wrong?", `<span class="${reds ? "red" : ""}">${reds} red</span>, ${a.risks.length - reds} amber`],
@@ -141,7 +141,7 @@ function book(a) {
     ...b.lost.map((l) => `<tr class="lost"><td><div class="title">${esc(l.title)}</div>${chips(l.cites)}</td><td><span class="tag lost">Declined</span></td><td class="num">${esc(money(l.value, a.currency))}</td></tr>`),
   ].join("");
   return `<section class="q" id="${a.id}-book" aria-labelledby="${a.id}-book-h">
-    ${qhead(a, "book", 1, "What is the book worth?", "Value = the deal's worth_up_to from the account export")}
+    ${qhead(a, "book", 1, "What is the book worth?", "Values are deal sizes from the account export (worth_up_to)")}
     <div class="prov">
       <div class="total"><span class="big">${esc(money(b.total.value, a.currency))}</span><span class="muted">on the book, split by how well each part is backed</span></div>
       <div class="bar" role="img" aria-label="${segs.map((s) => `${BUCKET[s.bucket].label} ${money(s.value, a.currency)}`).join(", ")}">
@@ -156,6 +156,8 @@ function book(a) {
     ${apart ? `<h3 class="sub">Shown apart, not in the total</h3><div class="ledger-wrap"><table class="ledger"><tbody>${apart}</tbody></table></div>` : ""}
   </section>`;
 }
+
+const RISK_TYPE = { deadline: "Deadline", stuck: "Stuck deal", cold: "Going cold", usage: "Usage", signal: "Live event", relationship: "Relationship" };
 
 const ROLE_LABEL = { decides: "Decides", pays: "Pays", uses: "Uses it", blocks: "Could block", champion: "Champions" };
 
@@ -187,6 +189,7 @@ function moveItem(m) {
       ${m.source === "signal" ? `<div class="live-label">New live event, not yet reviewed</div>` : ""}
       <p class="action">${esc(m.action)}</p>
       <div class="facts"><span><b>Owner</b> ${esc(m.owner)}</span><span><b>By</b> ${esc(day(m.due))}</span><span><b>Moves</b> ${esc((m.deals ?? []).map((d) => model.sources[d]?.title ?? d).join("; ") || "the account")}</span></div>
+      ${m.inside ? `<div class="inside"><b>Inside:</b> ${esc(m.inside)}</div>` : ""}
       <p class="why">${esc(m.why)}</p>
       ${chips(m.cites)}
     </div>
@@ -209,7 +212,7 @@ function risks(a) {
       <td><div class="title">${r.live ? '<span class="tag red">Live</span> ' : ""}${esc(r.title)}</div>
         ${r.turns_bad ? `<div class="turns"><b>Turns bad:</b> ${esc(r.turns_bad)}</div>` : `<div class="turns muted">No date on file for when this turns bad.</div>`}
         ${chips(r.cites)}</td>
-      <td><span class="tag ${esc(r.severity)}">${esc(r.severity)}</span><div class="small muted">${esc(r.type ?? "")}</div></td>
+      <td><span class="tag ${esc(r.severity)}">${esc(r.severity)}</span><div class="small muted">${esc(RISK_TYPE[r.type] ?? "")}</div></td>
     </tr>`).join("");
   return `<section class="q" id="${a.id}-risks" aria-labelledby="${a.id}-risks-h">
     ${qhead(a, "risks", 4, "What is about to go wrong?", "Deadlines, stuck deals, cold people, live events")}
@@ -342,9 +345,12 @@ async function load() {
     const next = await r.json();
     const y = window.scrollY;
     const drawerOpen = $("#drawer").classList.contains("open");
+    const first = !model;
     model = next;
     lastOk = Date.now();
     if (!drawerOpen) { render(); window.scrollTo(0, y); } else renderStrip();
+    // Deep links such as #B-risks only resolve once the page has rendered.
+    if (first && /^#[AB]-\w+$/.test(location.hash)) document.getElementById(location.hash.slice(1))?.scrollIntoView();
     checkNew();
   } catch (err) {
     if (!model) $("#main").innerHTML = `<p class="loading err">Could not load the accounts (${esc(err.message)}). Retrying in a minute.</p>`;

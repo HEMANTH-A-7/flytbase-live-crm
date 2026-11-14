@@ -297,3 +297,5 @@ section.q { margin-top: 56px; scroll-margin-top: 64px; }
   .roles dt { border-top: 1px solid var(--rule); padding-bottom: 0; }
   .roles dd { border-top: 0; }
 }
+.move .inside { margin-top: 6px; font-size: var(--step--1); color: var(--alert); }
+.move .inside b { font-weight: 600; }

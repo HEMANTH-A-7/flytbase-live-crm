@@ -4,7 +4,7 @@
   "account_owner": "Hemanth (CSM)",
   "accounts": {
     "A": {
-      "headline": "The renewal (350,000, term ends 28 Feb 2027) rests on one contact, and half the docks flew nothing in October.",
+      "headline": "The renewal (350,000, term ends 28 Feb 2027) rests on one contact. In October only Westmere flew properly: Metro Central fell to 3 of 9 docks, and Tarn Valley and Norwold have never flown a live mission.",
       "power": {
         "a_renewal": {
           "decides": [
@@ -228,9 +228,9 @@
       "moves": [
         {
           "key": "a_renewal_proof",
-          "action": "Send Rhys Calder the renewal case: the force-by-month flight log and Karen's verified 14 of 18 docks, and ask in writing who signs each force's call-off before 28 Feb.",
+          "action": "Send Rhys Calder the renewal case by force: Westmere flew 126 live missions on 14 of 18 docks in October, Metro Central 21 on 3 of 9, Tarn Valley and Norwold none. Ask in writing who signs each force's call-off, and copy Hannah Doyle.",
           "owner": "Hemanth (CSM)",
-          "due": "2026-11-17",
+          "due": "2026-11-16",
           "deals": [
             "a_renewal"
           ],
@@ -243,31 +243,33 @@
             "hd_calloff_2",
             "A/contract.txt",
             "morning_debrief"
-          ]
+          ],
+          "inside": "Renewal term ends 28 Feb 2027, with no automatic renewal"
         },
         {
           "key": "a_tarn_dataflow",
-          "action": "Ask engineering for the data-flow pack today, take ownership of the unanswered support ticket, and tell Fatima Osei the delivery date. Then send her the pack with her own list of needs and the ticket history.",
-          "owner": "Hemanth (CSM); SRV for the pack",
+          "action": "Send Fatima Osei the draft data-flow pack we already hold, as the answer to her own ticket FB-10412 (open since 29 Jun). Ask her the pack's two open questions: the retention period, and who approves new user accounts. Have engineering stand behind the final version.",
+          "owner": "Hemanth (CSM); SRV to sign off the pack",
           "due": "2026-11-16",
           "deals": [
             "a_tarn"
           ],
-          "why": "The only blocker on a 200,000 deal is a document we owe them. Pack in a week, her DPIA in three weeks after that: signed by mid-December if we start Monday.",
+          "why": "The only blocker on a 200,000 deal is a document we owe them, and a draft already exists. She needs three weeks once she has it, so starting Monday gets a signed DPIA by about 7 Dec. Norwold copies her assessment.",
           "cites": [
             "a_tarn",
+            "dataflow_pack",
             "srv_dataflow",
             "fo_needs_3",
-            "pj_ticket",
+            "fo_dpia_2",
             "support_ticket_history",
-            "dataflow_pack",
             "morning_debrief",
             "srv"
-          ]
+          ],
+          "inside": "No dated deadline; every week of delay pushes both forces back"
         },
         {
           "key": "a_karen_reply",
-          "action": "Reply to Insp. Karen Mbeki on the battery fault she raised on 11 Aug: replacement dates and one named person to call. Ask her for the dock-by-force list.",
+          "action": "Reply to Insp. Karen Mbeki on the battery fault she raised on 11 Aug: replacement dates, and one named person to call. Ask her for the dock-to-site list, and whether she will stand behind Westmere's figures in the renewal case.",
           "owner": "Hemanth (CSM)",
           "due": "2026-11-17",
           "deals": [
@@ -281,11 +283,12 @@
             "A/requests.csv",
             "a_westmere",
             "km_usage_1"
-          ]
+          ],
+          "inside": "Already three months overdue"
         },
         {
           "key": "a_ewan_overtime",
-          "action": "Ask Ewan Brooks for the drone-operator overtime figure he can pull in a week, to set a cost per flight against the 1,500-pound helicopter hour for his CFO.",
+          "action": "Ask Ewan Brooks for the drone-operator overtime figure he can pull in a week, to set a cost per flight against the 1,500-pound helicopter hour for his CFO. Ask him too why Metro Central flew only 3 of 9 docks in October.",
           "owner": "Hemanth (CSM)",
           "due": "2026-11-18",
           "deals": [
@@ -298,8 +301,10 @@
             "eb_drone_2",
             "eb_heli_1",
             "eb_sign_2",
-            "helicopter_cost_overtime"
-          ]
+            "helicopter_cost_overtime",
+            "flight_log_force_month"
+          ],
+          "inside": "Before Metro Central's call-off decision on the renewal (by 28 Feb 2027)"
         },
         {
           "key": "a_hannah_route",
@@ -315,7 +320,8 @@
             "hannah_doyle",
             "hd_silence_3",
             "A/calls/2025-12-16_pilot_review.txt"
-          ]
+          ],
+          "inside": "Before the renewal order is raised (term ends 28 Feb 2027)"
         }
       ],
       "risks": [
@@ -363,11 +369,43 @@
           "key": "idle_docks",
           "type": "usage",
           "severity": "amber",
-          "title": "17 of 35 docks flew nothing in the four weeks from 5 Oct, while online every day.",
+          "title": "17 of 35 docks flew nothing in the four weeks from 5 Oct, though online every day. Tarn Valley (4 docks) and Norwold (4) have never flown a live mission.",
           "turns_bad": "At renewal, when non-flying forces are asked to pay",
           "cites": [
             "A/usage_weekly.csv",
+            "flight_log_force_month",
             "rc_appetite_2"
+          ]
+        },
+        {
+          "key": "metro_falling",
+          "type": "usage",
+          "severity": "red",
+          "title": "Metro Central is flying less: 8 docks and 56 live missions in August, 3 docks and 21 missions in October. It is a paying force, and nobody has asked why.",
+          "turns_bad": "When Metro Central's CFO weighs the renewal call-off (before 28 Feb 2027)",
+          "cites": [
+            "flight_log_force_month",
+            "ewan_brooks",
+            "eb_sign_2"
+          ]
+        },
+        {
+          "key": "debrief_westmere",
+          "type": "relationship",
+          "severity": "amber",
+          "title": "Scale Westmere's fleet is agreed, but this morning an offer was pitched before they were ready, and Extra docks for Metro Central was declined.",
+          "turns_bad": "If more is pitched before the renewal case is made",
+          "cites": [
+            "a_westmere",
+            "a_extra_docks",
+            "morning_debrief"
+          ]
+        },
+        {
+          "key": "cold:fatima_osei",
+          "turns_bad": "Each week without the pack. Her DPIA takes three weeks once she has it",
+          "cites": [
+            "fo_needs_3"
           ]
         }
       ],
@@ -378,7 +416,8 @@
           "cites": [
             "ewan_brooks",
             "rc_funding_2"
-          ]
+          ],
+          "why": "The renewal plan assumes the money exists. There is no pooled budget: each force must approve its own call-off."
         },
         "rc_appetite_0": {
           "who": "Insp. Karen Mbeki",
@@ -386,7 +425,8 @@
           "cites": [
             "rc_appetite_2",
             "flight_log_force_month"
-          ]
+          ],
+          "why": "Already contradicted by the force-by-month log: two forces have never flown a live mission."
         },
         "rc_stadium_0": {
           "who": "Insp. Karen Mbeki, then the Westmere superintendent",
@@ -394,18 +434,20 @@
           "cites": [
             "kb_stadium_view",
             "rc_stadium_3"
-          ]
+          ],
+          "why": "A 30-dock quote was asked for with no funding or policing plan. Quoting it would repeat this morning's early pitch."
         }
       },
       "gaps": [
         {
           "key": "dock_by_force",
-          "title": "Which dock sits at which force",
-          "why": "Needed to show each force its own usage at renewal.",
+          "title": "Which dock sits at which site",
+          "why": "Docks per force are known (18, 9, 4, 4), but not which dock is where. That is needed to show each force its own usage.",
           "who": "Insp. Karen Mbeki or the FlytBase field team (install sheets)",
           "cites": [
             "A/devices.json",
-            "A/profile.json"
+            "A/profile.json",
+            "flight_log_force_month"
           ]
         },
         {
@@ -419,20 +461,22 @@
           ]
         },
         {
-          "key": "ticket_requester",
-          "title": "Who raised the unanswered document request FB-10412",
-          "why": "Probably Tarn Valley's DPO, but the record does not say.",
-          "who": "The FlytBase support desk",
+          "key": "metro_reason",
+          "title": "Why Metro Central stopped flying most of its docks",
+          "why": "It is a paying force, and its usage fell by more than half between August and October.",
+          "who": "Ewan Brooks, or Metro Central operations (they raised FB-10781 in August)",
           "cites": [
-            "A/tickets.json",
-            "pj_ticket"
+            "flight_log_force_month",
+            "ewan_brooks",
+            "A/tickets.json"
           ]
         }
       ],
       "headline_cites": [
         "a_renewal",
         "A/contract.txt",
-        "A/usage_weekly.csv"
+        "A/profile.json",
+        "flight_log_force_month"
       ],
       "value_basis": {
         "a_renewal": {
@@ -466,7 +510,7 @@
       }
     },
     "B": {
-      "headline": "Five docks fly 85% of the patrols, the renewal (140,000, ends 31 Jan 2027) goes to a finance team we have never met, and the deputy who knows the rollout is leaving.",
+      "headline": "Five docks fly 85% of the flights. The renewal (140,000, ends 31 Jan 2027) needs finance, whose request has had no reply since 8 Oct, and the deputy who knows the rollout is leaving.",
       "power": {
         "b_renewal": {
           "decides": [
@@ -695,11 +739,12 @@
             "ba_playbook_2",
             "plant7_checklist",
             "B/calls/2026-05-21_intro_call.txt"
-          ]
+          ],
+          "inside": "Before the deputy leaves (date not on file)"
         },
         {
           "key": "b_owen_proposal",
-          "action": "Send Owen Fitch a dock-exception plan built from the network plan and the Plant 7 checklist, and take up his offer of two network-engineer days for a pilot at Plants 11 to 14.",
+          "action": "Send Owen Fitch a dock-exception request for his register, where drone docks are \"NOT LISTED\" today, built from the network plan and the Plant 7 checklist. Take up his offer of two network-engineer days for a pilot at Plants 11 to 14, which run on 4G backup only.",
           "owner": "Hemanth (CSM)",
           "due": "2026-11-17",
           "deals": [
@@ -716,11 +761,12 @@
             "network_plan",
             "plant7_checklist",
             "morning_debrief"
-          ]
+          ],
+          "inside": "Before segmentation starts in about four months (about mid-March 2027)"
         },
         {
           "key": "b_finance_quote",
-          "action": "Answer Group Finance's email of 8 Oct with the renewal quote by plant, led by the insurer's verified 180,000 premium cut rather than the 1.2M claim, and ask for 30 minutes with Nadia Rahman.",
+          "action": "Answer Group Finance's email of 8 Oct with the renewal quote by plant, and ask for 30 minutes with Nadia Rahman. Lead with the insurer's verified 180,000 premium cut, not the 1.2M claim: that spreadsheet's rows add up to 1,053,400 and no guard contract was reduced.",
           "owner": "Hemanth (CSM); Achal Negi for the quote",
           "due": "2026-11-18",
           "deals": [
@@ -737,12 +783,14 @@
             "sr_roi_0",
             "sr_roi_2",
             "B/contract.txt",
-            "achal_negi"
-          ]
+            "achal_negi",
+            "roi_spreadsheet"
+          ],
+          "inside": "Renewal term ends 31 Jan 2027, with no automatic renewal"
         },
         {
           "key": "b_julian_surveyor",
-          "action": "Ask Julian Tate to introduce the insurer's surveyor, and agree the flight-log-by-plant format they will accept before building it.",
+          "action": "Ask Julian Tate to introduce the insurer's surveyor, and agree the flight-log-by-plant format they will accept for plants 1 to 9. Then build it.",
           "owner": "Hemanth (CSM)",
           "due": "2026-11-19",
           "deals": [
@@ -754,8 +802,10 @@
             "julian_tate",
             "jt_review_2",
             "jt_prem_2",
-            "morning_debrief"
-          ]
+            "morning_debrief",
+            "insurer_premium_letter"
+          ],
+          "inside": "Before the insurer's review in five months (about mid-April 2027)"
         }
       ],
       "risks": [
@@ -771,7 +821,7 @@
         {
           "key": "stuck:b_idle",
           "severity": "red",
-          "turns_bad": "When network segmentation starts, in about four months, unless exceptions are planned",
+          "turns_bad": "When segmentation starts, in about four months (about mid-March 2027). Docks are \"NOT LISTED\" in the exception register, and default-deny cuts them off",
           "cites": [
             "of_seg_2",
             "network_plan"
@@ -780,9 +830,10 @@
         {
           "key": "stuck:b_insurance",
           "severity": "amber",
-          "turns_bad": "At the insurer's review in about five months",
+          "turns_bad": "At the insurer's review in about five months (about mid-April 2027). Plants without regular patrol records may lose the 6% cut",
           "cites": [
-            "jt_review_2"
+            "jt_review_2",
+            "insurer_premium_letter"
           ]
         },
         {
@@ -802,10 +853,11 @@
           "type": "usage",
           "severity": "amber",
           "title": "Plant 11's dock drops offline for days. The ticket has waited on customer IT since 10 Sep.",
-          "turns_bad": "Already bad; one more idle plant for the insurer to see",
+          "turns_bad": "Already bad. Plant 11 is one of the four plants on 4G backup only, and when segmentation starts (about mid-March 2027) its dock goes dark with no exception",
           "cites": [
             "B/requests.csv",
-            "ba_other_1"
+            "ba_other_1",
+            "network_plan"
           ]
         },
         {
@@ -818,6 +870,28 @@
             "B/usage_weekly.csv",
             "sr_roll_0"
           ]
+        },
+        {
+          "key": "cold:nadia_rahman",
+          "turns_bad": "31 Jan 2027: the renewal needs her sign-off, and her team's 8 Oct request is unanswered",
+          "cites": [
+            "B/contract.txt",
+            "B/emails/2026-10-08_finance_mailbox.txt"
+          ]
+        },
+        {
+          "key": "debrief_offers",
+          "type": "relationship",
+          "severity": "amber",
+          "title": "Two offers were declined this morning, pitched before they were ready: flight-log reporting (to finance) and docks for more plants (to Stefan Roy). The idle-plants and insurance deals were put at risk.",
+          "turns_bad": "If either is re-pitched before its blocker clears",
+          "cites": [
+            "b_reporting",
+            "b_more_plants",
+            "b_idle",
+            "b_insurance",
+            "morning_debrief"
+          ]
         }
       ],
       "gap_owners": {
@@ -827,14 +901,16 @@
           "cites": [
             "sr_roi_2",
             "roi_spreadsheet"
-          ]
+          ],
+          "why": "It is the headline the sister-company case study would carry. The rows add up to 1,053,400, no guard contract has been reduced, and finance booked nothing."
         },
         "sr_roll_0": {
           "who": "Owen Fitch, or the weekly usage log",
           "how": "The log counts flights per dock; the install list says which plant is which.",
           "cites": [
             "B/usage_weekly.csv"
-          ]
+          ],
+          "why": "Flying at all is not patrolling. Five docks fly 85% of the flights, and the insurer will ask per plant."
         },
         "b_renewal": {
           "who": "Nadia Rahman",
@@ -842,15 +918,18 @@
           "cites": [
             "morning_debrief",
             "B/emails/2026-10-08_finance_mailbox.txt"
-          ]
+          ],
+          "why": "The renewal is the account's base revenue, and nobody has sized it with the person who pays."
         },
         "b_sister": {
           "who": "Stefan Roy for the contact, Nadia Rahman for the numbers",
           "how": "No contact at the sister company is on file.",
           "cites": [
             "B/deal_history.json",
-            "sr_roi_2"
-          ]
+            "sr_roi_2",
+            "plant7_checklist"
+          ],
+          "why": "The only evidence we hold for a case study is the insurer letter and Beatriz's two deterred break-ins, which she has not shared with head office."
         }
       },
       "gaps": [
@@ -877,11 +956,12 @@
         {
           "key": "insurer_proof",
           "title": "A flight log by plant and an insurance pack template (named in the debrief, not held)",
-          "why": "Two pieces missing to prove the fix on the insurance deal.",
+          "why": "Two pieces of proof are missing for the insurance deal, and the letter covers plants 1 to 9 only.",
           "who": "Julian Tate, and the insurer's surveyor",
           "cites": [
             "morning_debrief",
-            "jt_review_2"
+            "jt_review_2",
+            "insurer_premium_letter"
           ]
         },
         {
@@ -898,7 +978,7 @@
       "headline_cites": [
         "B/usage_weekly.csv",
         "B/contract.txt",
-        "b_renewal",
+        "B/emails/2026-10-08_finance_mailbox.txt",
         "sr_repl_2"
       ],
       "value_basis": {
