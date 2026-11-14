@@ -10,6 +10,7 @@ let current = (location.hash.match(/^#([A-Za-z0-9]+)\b/) ?? [])[1] ?? safeGet("c
 let lastOk = null;
 let lastFocus = null;
 let railObserver = null;
+let staleView = false; // new data arrived while the drawer was open
 
 // ---------- helpers ----------
 
@@ -503,6 +504,8 @@ function openDraft(key) {
 function closeDrawer() {
   $("#drawer").classList.remove("open");
   $("#scrim").classList.remove("show");
+  // Anything that arrived while the drawer was open is shown now, not a minute later.
+  if (staleView) { const y = window.scrollY; render(); window.scrollTo(0, y); staleView = false; }
   lastFocus?.focus?.();
 }
 
@@ -544,7 +547,7 @@ async function load() {
     const first = !model;
     model = next;
     lastOk = Date.now();
-    if (!drawerOpen) { render(); window.scrollTo(0, y); } else renderStrip();
+    if (!drawerOpen) { render(); window.scrollTo(0, y); staleView = false; } else { renderStrip(); staleView = true; }
     // Deep links such as #B-risks only resolve once the page has rendered.
     if (first && /^#[A-Za-z0-9]+-\w+$/.test(location.hash)) document.getElementById(location.hash.slice(1))?.scrollIntoView();
     checkNew();

@@ -86,3 +86,16 @@ test("paperwork for any open account we do not hold is fetched without being ask
   applyResult(ov, job, { account: "K", records: [{ path: "usage_weekly.csv", kind: "usage", text: "week_start,dock_id,flights,days_online\n2026-11-02,K-1,0,7" }] }, 0);
   assert.notEqual(nextJob(ov, [], new Set(), new Set(["A"])).tool, "get_all_paperwork");
 });
+
+test("two server copies merge what they learned instead of overwriting each other", async () => {
+  const { mergeOverlays } = await import("../lib/live.js");
+  const a = { ...emptyOverlay(), lastCallAt: 2, signals: { signals: [{ id: "s1" }] }, drops: { K: { accounts: [] } }, notesTitles: ["n1"], writes: [{ title: "n1" }] };
+  const b = { ...emptyOverlay(), lastCallAt: 1, signals: { signals: [{ id: "s2" }] }, dropFiles: { f1: { text: "x" } }, notesTitles: ["n2"], writes: [{ title: "n2" }], notesSynced: true };
+  const m = mergeOverlays(a, b);
+  assert.deepEqual(m.signals.signals.map((s) => s.id).sort(), ["s1", "s2"]);
+  assert.ok(m.drops.K && m.dropFiles.f1);
+  assert.deepEqual(m.notesTitles.sort(), ["n1", "n2"]);
+  assert.equal(m.writes.length, 2);
+  assert.ok(m.notesSynced);
+  assert.equal(m.lastCallAt, 2);
+});
