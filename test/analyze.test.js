@@ -226,3 +226,11 @@ test("an event for an account that has not loaded yet is still surfaced", () => 
   const m = build({ signals: { signals: [...seed.signals.signals, { id: "z1", account: "Z", text: "Something at a new account." }] } });
   assert.ok(m.unassigned_signals.some((s) => s.id === "z1"));
 });
+
+test("account-level deadlines that belong to no deal are shown too", () => {
+  const k = build({ exp: liveMod.currentExport(seed.export, null, seed.drops) }).accounts.find((a) => a.id === "K");
+  const plan = k.risks.find((r) => r.title === "Go-live plan promised to Dana");
+  assert.ok(plan, "the go-live plan deadline is a risk");
+  assert.equal(plan.severity, "red");
+  assert.match(plan.turns_bad, /about 2 days/);
+});

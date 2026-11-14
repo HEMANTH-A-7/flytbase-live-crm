@@ -18,7 +18,7 @@ Requires Node 22.9 or later. One runtime dependency, @vercel/blob, for the share
 
 ```sh
 cp .env.example .env          # then put your token after AQ_TOKEN=
-npm test                      # 32 tests, including "no invented ids"
+npm test                      # 34 tests, including "no invented ids"
 npm run dev                   # http://localhost:3000
 ```
 
