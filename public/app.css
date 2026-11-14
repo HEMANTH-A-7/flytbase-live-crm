@@ -289,6 +289,7 @@ section.q { margin-top: 56px; scroll-margin-top: 64px; }
   .main { padding: 24px 16px 60px; }
   .strip { padding: 8px 16px; gap: 10px; }
   .acct-head h1 { font-size: var(--step-3); }
+  .story > div + div { padding-left: 0; border-left: 0; border-top: 1px solid var(--rule); }
   .q-head .aside { display: none; }
   .move { grid-template-columns: 40px 1fr; }
   .move .rank { font-size: var(--step-3); }
